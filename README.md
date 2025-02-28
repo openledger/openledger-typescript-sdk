@@ -20,10 +20,23 @@ A full reference for this library is available [here](./reference.md).
 Instantiate and use the client with the following:
 
 ```typescript
-import { OpenLedgerClientClient } from "openledger";
+import { OpenLedgerClientClient, OpenLedgerClient } from "openledger";
 
 const client = new OpenLedgerClientClient({ token: "YOUR_TOKEN" });
-await client.transactions.createANewTransaction("id");
+await client.transactions.createANewTransaction("id", {});
+```
+
+## Request And Response Types
+
+The SDK exports all request and response types as TypeScript interfaces. Simply import them with the
+following namespace:
+
+```typescript
+import { OpenLedgerClient } from "openledger";
+
+const request: OpenLedgerClient.ExportTransactionRequest = {
+    ...
+};
 ```
 
 ## Exception Handling

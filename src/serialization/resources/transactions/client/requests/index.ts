@@ -1,0 +1,1 @@
+export { SuggestTransactionCategoriesRequest } from "./SuggestTransactionCategoriesRequest";

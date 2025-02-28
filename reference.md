@@ -2,7 +2,7 @@
 
 ## Transactions
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByCompany</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByCompany</a>(id) -> OpenLedgerClient.GetIdTransactionsResponse</code></summary>
 <dl>
 <dd>
 
@@ -31,7 +31,7 @@ await client.transactions.getTransactionsByCompany("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -50,7 +50,7 @@ await client.transactions.getTransactionsByCompany("id");
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">createANewTransaction</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">createANewTransaction</a>(id, { ...params }) -> OpenLedgerClient.Transaction</code></summary>
 <dl>
 <dd>
 
@@ -63,7 +63,7 @@ await client.transactions.getTransactionsByCompany("id");
 <dd>
 
 ```typescript
-await client.transactions.createANewTransaction("id");
+await client.transactions.createANewTransaction("id", {});
 ```
 
 </dd>
@@ -79,7 +79,15 @@ await client.transactions.createANewTransaction("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.Transaction`
 
 </dd>
 </dl>
@@ -98,7 +106,7 @@ await client.transactions.createANewTransaction("id");
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">exportTransactions</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">editATransaction</a>(id, transactionId, { ...params }) -> OpenLedgerClient.Transaction</code></summary>
 <dl>
 <dd>
 
@@ -111,7 +119,7 @@ await client.transactions.createANewTransaction("id");
 <dd>
 
 ```typescript
-await client.transactions.exportTransactions("id");
+await client.transactions.editATransaction("id", "transactionId", {});
 ```
 
 </dd>
@@ -127,7 +135,23 @@ await client.transactions.exportTransactions("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**transactionId:** `string` — Transaction ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.Transaction`
 
 </dd>
 </dl>
@@ -146,7 +170,7 @@ await client.transactions.exportTransactions("id");
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">classifyTransactions</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">exportTransaction</a>(id, { ...params }) -> OpenLedgerClient.ExportTransactionResponse</code></summary>
 <dl>
 <dd>
 
@@ -159,7 +183,7 @@ await client.transactions.exportTransactions("id");
 <dd>
 
 ```typescript
-await client.transactions.classifyTransactions("id");
+await client.transactions.exportTransaction("id");
 ```
 
 </dd>
@@ -175,7 +199,15 @@ await client.transactions.classifyTransactions("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.ExportTransactionRequest`
 
 </dd>
 </dl>
@@ -194,9 +226,7 @@ await client.transactions.classifyTransactions("id");
 </dl>
 </details>
 
-## Accounts
-
-<details><summary><code>client.accounts.<a href="/src/api/resources/accounts/client/Client.ts">getBankAccounts</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByMonth</a>(id, month) -> OpenLedgerClient.GetTransactionsByMonthResponse</code></summary>
 <dl>
 <dd>
 
@@ -209,7 +239,7 @@ await client.transactions.classifyTransactions("id");
 <dd>
 
 ```typescript
-await client.accounts.getBankAccounts("id");
+await client.transactions.getTransactionsByMonth("id", "month");
 ```
 
 </dd>
@@ -225,7 +255,7 @@ await client.accounts.getBankAccounts("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -233,7 +263,15 @@ await client.accounts.getBankAccounts("id");
 <dl>
 <dd>
 
-**requestOptions:** `Accounts.RequestOptions`
+**month:** `string` — Month in YYYY-MM format
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Transactions.RequestOptions`
 
 </dd>
 </dl>
@@ -244,7 +282,7 @@ await client.accounts.getBankAccounts("id");
 </dl>
 </details>
 
-<details><summary><code>client.accounts.<a href="/src/api/resources/accounts/client/Client.ts">addABankAccount</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">promptTransaction</a>(id) -> Record<string, unknown></code></summary>
 <dl>
 <dd>
 
@@ -257,7 +295,7 @@ await client.accounts.getBankAccounts("id");
 <dd>
 
 ```typescript
-await client.accounts.addABankAccount("id");
+await client.transactions.promptTransaction("id");
 ```
 
 </dd>
@@ -273,7 +311,7 @@ await client.accounts.addABankAccount("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -281,7 +319,7 @@ await client.accounts.addABankAccount("id");
 <dl>
 <dd>
 
-**requestOptions:** `Accounts.RequestOptions`
+**requestOptions:** `Transactions.RequestOptions`
 
 </dd>
 </dl>
@@ -292,7 +330,7 @@ await client.accounts.addABankAccount("id");
 </dl>
 </details>
 
-<details><summary><code>client.accounts.<a href="/src/api/resources/accounts/client/Client.ts">getTotalBalanceOfAllAccounts</a>(id) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">classifyTransaction</a>(id) -> OpenLedgerClient.Transaction[]</code></summary>
 <dl>
 <dd>
 
@@ -305,7 +343,7 @@ await client.accounts.addABankAccount("id");
 <dd>
 
 ```typescript
-await client.accounts.getTotalBalanceOfAllAccounts("id");
+await client.transactions.classifyTransaction("id");
 ```
 
 </dd>
@@ -321,7 +359,7 @@ await client.accounts.getTotalBalanceOfAllAccounts("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -329,7 +367,167 @@ await client.accounts.getTotalBalanceOfAllAccounts("id");
 <dl>
 <dd>
 
-**requestOptions:** `Accounts.RequestOptions`
+**requestOptions:** `Transactions.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">generateGeneralLedger</a>(id) -> Record<string, unknown></code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.transactions.generateGeneralLedger("id");
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Transactions.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">bulkCreateTransactions</a>(id, { ...params }) -> OpenLedgerClient.Transaction[]</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.transactions.bulkCreateTransactions("id", [{}]);
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.Transaction[]`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Transactions.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">suggestTransactionCategories</a>(id, { ...params }) -> OpenLedgerClient.SuggestTransactionCategoriesResponseItem[]</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.transactions.suggestTransactionCategories("id");
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.SuggestTransactionCategoriesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Transactions.RequestOptions`
 
 </dd>
 </dl>
@@ -342,7 +540,7 @@ await client.accounts.getTotalBalanceOfAllAccounts("id");
 
 ## Companies
 
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">createANewCompany</a>() -> void</code></summary>
+<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">createCompany</a>({ ...params }) -> Record<string, unknown></code></summary>
 <dl>
 <dd>
 
@@ -355,7 +553,7 @@ await client.accounts.getTotalBalanceOfAllAccounts("id");
 <dd>
 
 ```typescript
-await client.companies.createANewCompany();
+await client.companies.createCompany();
 ```
 
 </dd>
@@ -371,47 +569,7 @@ await client.companies.createANewCompany();
 <dl>
 <dd>
 
-**requestOptions:** `Companies.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">getCompanyDetails</a>(id) -> void</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.companies.getCompanyDetails("id");
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string`
+**request:** `OpenLedgerClient.CreateCompanyRequest`
 
 </dd>
 </dl>
@@ -430,7 +588,7 @@ await client.companies.getCompanyDetails("id");
 </dl>
 </details>
 
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">updateCompanyDetails</a>(id) -> void</code></summary>
+<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">getCompany</a>(id) -> Record<string, unknown></code></summary>
 <dl>
 <dd>
 
@@ -443,7 +601,7 @@ await client.companies.getCompanyDetails("id");
 <dd>
 
 ```typescript
-await client.companies.updateCompanyDetails("id");
+await client.companies.getCompany("id");
 ```
 
 </dd>
@@ -459,7 +617,7 @@ await client.companies.updateCompanyDetails("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -478,7 +636,7 @@ await client.companies.updateCompanyDetails("id");
 </dl>
 </details>
 
-<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">deleteACompany</a>(id) -> void</code></summary>
+<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">updateCompany</a>(id, { ...params }) -> Record<string, unknown></code></summary>
 <dl>
 <dd>
 
@@ -491,7 +649,9 @@ await client.companies.updateCompanyDetails("id");
 <dd>
 
 ```typescript
-await client.companies.deleteACompany("id");
+await client.companies.updateCompany("id", {
+    key: "value",
+});
 ```
 
 </dd>
@@ -507,7 +667,15 @@ await client.companies.deleteACompany("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `Record<string, unknown>`
 
 </dd>
 </dl>
@@ -526,9 +694,7 @@ await client.companies.deleteACompany("id");
 </dl>
 </details>
 
-## Reports
-
-<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">getProfitAndLossStatement</a>(id) -> void</code></summary>
+<details><summary><code>client.companies.<a href="/src/api/resources/companies/client/Client.ts">deleteCompany</a>(id) -> void</code></summary>
 <dl>
 <dd>
 
@@ -541,7 +707,7 @@ await client.companies.deleteACompany("id");
 <dd>
 
 ```typescript
-await client.reports.getProfitAndLossStatement("id");
+await client.companies.deleteCompany("id");
 ```
 
 </dd>
@@ -557,7 +723,7 @@ await client.reports.getProfitAndLossStatement("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -565,7 +731,7 @@ await client.reports.getProfitAndLossStatement("id");
 <dl>
 <dd>
 
-**requestOptions:** `Reports.RequestOptions`
+**requestOptions:** `Companies.RequestOptions`
 
 </dd>
 </dl>
@@ -576,7 +742,9 @@ await client.reports.getProfitAndLossStatement("id");
 </dl>
 </details>
 
-<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">generateIncomeStatement</a>(id) -> void</code></summary>
+## Categories
+
+<details><summary><code>client.categories.<a href="/src/api/resources/categories/client/Client.ts">getCategoriesByCompany</a>(id) -> OpenLedgerClient.GetCategoriesByCompanyResponseItem[]</code></summary>
 <dl>
 <dd>
 
@@ -589,7 +757,7 @@ await client.reports.getProfitAndLossStatement("id");
 <dd>
 
 ```typescript
-await client.reports.generateIncomeStatement("id");
+await client.categories.getCategoriesByCompany("id");
 ```
 
 </dd>
@@ -605,7 +773,7 @@ await client.reports.generateIncomeStatement("id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -613,7 +781,7 @@ await client.reports.generateIncomeStatement("id");
 <dl>
 <dd>
 
-**requestOptions:** `Reports.RequestOptions`
+**requestOptions:** `Categories.RequestOptions`
 
 </dd>
 </dl>
@@ -624,9 +792,7 @@ await client.reports.generateIncomeStatement("id");
 </dl>
 </details>
 
-## Chat
-
-<details><summary><code>client.chat.<a href="/src/api/resources/chat/client/Client.ts">getChatMessages</a>(id, chatId) -> void</code></summary>
+<details><summary><code>client.categories.<a href="/src/api/resources/categories/client/Client.ts">createCategory</a>(id, { ...params }) -> Record<string, unknown></code></summary>
 <dl>
 <dd>
 
@@ -639,7 +805,7 @@ await client.reports.generateIncomeStatement("id");
 <dd>
 
 ```typescript
-await client.chat.getChatMessages("id", "chat_id");
+await client.categories.createCategory("id");
 ```
 
 </dd>
@@ -655,7 +821,7 @@ await client.chat.getChatMessages("id", "chat_id");
 <dl>
 <dd>
 
-**id:** `string`
+**id:** `string` — Company ID
 
 </dd>
 </dl>
@@ -663,7 +829,7 @@ await client.chat.getChatMessages("id", "chat_id");
 <dl>
 <dd>
 
-**chatId:** `string`
+**request:** `OpenLedgerClient.CreateCategoryRequest`
 
 </dd>
 </dl>
@@ -671,105 +837,7 @@ await client.chat.getChatMessages("id", "chat_id");
 <dl>
 <dd>
 
-**requestOptions:** `Chat.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.chat.<a href="/src/api/resources/chat/client/Client.ts">sendAChatMessage</a>(id, chatId) -> void</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.chat.sendAChatMessage("id", "chat_id");
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**chatId:** `string`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Chat.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-## Invoices
-
-<details><summary><code>client.invoices.<a href="/src/api/resources/invoices/client/Client.ts">createANewInvoice</a>() -> void</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.invoices.createANewInvoice();
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**requestOptions:** `Invoices.RequestOptions`
+**requestOptions:** `Categories.RequestOptions`
 
 </dd>
 </dl>

@@ -5,11 +5,8 @@
 import * as environments from "./environments";
 import * as core from "./core";
 import { Transactions } from "./api/resources/transactions/client/Client";
-import { Accounts } from "./api/resources/accounts/client/Client";
 import { Companies } from "./api/resources/companies/client/Client";
-import { Reports } from "./api/resources/reports/client/Client";
-import { Chat } from "./api/resources/chat/client/Client";
-import { Invoices } from "./api/resources/invoices/client/Client";
+import { Categories } from "./api/resources/categories/client/Client";
 
 export declare namespace OpenLedgerClientClient {
     interface Options {
@@ -37,33 +34,15 @@ export class OpenLedgerClientClient {
         return (this._transactions ??= new Transactions(this._options));
     }
 
-    protected _accounts: Accounts | undefined;
-
-    public get accounts(): Accounts {
-        return (this._accounts ??= new Accounts(this._options));
-    }
-
     protected _companies: Companies | undefined;
 
     public get companies(): Companies {
         return (this._companies ??= new Companies(this._options));
     }
 
-    protected _reports: Reports | undefined;
+    protected _categories: Categories | undefined;
 
-    public get reports(): Reports {
-        return (this._reports ??= new Reports(this._options));
-    }
-
-    protected _chat: Chat | undefined;
-
-    public get chat(): Chat {
-        return (this._chat ??= new Chat(this._options));
-    }
-
-    protected _invoices: Invoices | undefined;
-
-    public get invoices(): Invoices {
-        return (this._invoices ??= new Invoices(this._options));
+    public get categories(): Categories {
+        return (this._categories ??= new Categories(this._options));
     }
 }

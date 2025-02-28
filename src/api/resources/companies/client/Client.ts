@@ -4,6 +4,8 @@
 
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
+import * as OpenLedgerClient from "../../../index";
+import * as serializers from "../../../../serialization/index";
 import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
@@ -24,21 +26,28 @@ export declare namespace Companies {
     }
 }
 
+/**
+ * Company management endpoints
+ */
 export class Companies {
     constructor(protected readonly _options: Companies.Options) {}
 
     /**
+     * @param {OpenLedgerClient.CreateCompanyRequest} request
      * @param {Companies.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @example
-     *     await client.companies.createANewCompany()
+     *     await client.companies.createCompany()
      */
-    public async createANewCompany(requestOptions?: Companies.RequestOptions): Promise<void> {
+    public async createCompany(
+        request: OpenLedgerClient.CreateCompanyRequest = {},
+        requestOptions?: Companies.RequestOptions
+    ): Promise<Record<string, unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "api/v1/companies"
+                "companies"
             ),
             method: "POST",
             headers: {
@@ -52,12 +61,19 @@ export class Companies {
             },
             contentType: "application/json",
             requestType: "json",
+            body: serializers.CreateCompanyRequest.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.companies.createCompany.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
@@ -83,18 +99,18 @@ export class Companies {
     }
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
      * @param {Companies.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @example
-     *     await client.companies.getCompanyDetails("id")
+     *     await client.companies.getCompany("id")
      */
-    public async getCompanyDetails(id: string, requestOptions?: Companies.RequestOptions): Promise<void> {
+    public async getCompany(id: string, requestOptions?: Companies.RequestOptions): Promise<Record<string, unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/companies/${encodeURIComponent(id)}`
+                `${encodeURIComponent(id)}/company`
             ),
             method: "GET",
             headers: {
@@ -113,7 +129,13 @@ export class Companies {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.companies.getCompany.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
@@ -139,18 +161,25 @@ export class Companies {
     }
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
+     * @param {Record<string, unknown>} request
      * @param {Companies.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @example
-     *     await client.companies.updateCompanyDetails("id")
+     *     await client.companies.updateCompany("id", {
+     *         "key": "value"
+     *     })
      */
-    public async updateCompanyDetails(id: string, requestOptions?: Companies.RequestOptions): Promise<void> {
+    public async updateCompany(
+        id: string,
+        request: Record<string, unknown>,
+        requestOptions?: Companies.RequestOptions
+    ): Promise<Record<string, unknown>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/companies/${encodeURIComponent(id)}`
+                `${encodeURIComponent(id)}/company`
             ),
             method: "PUT",
             headers: {
@@ -164,12 +193,19 @@ export class Companies {
             },
             contentType: "application/json",
             requestType: "json",
+            body: serializers.companies.updateCompany.Request.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.companies.updateCompany.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
@@ -195,18 +231,18 @@ export class Companies {
     }
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
      * @param {Companies.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @example
-     *     await client.companies.deleteACompany("id")
+     *     await client.companies.deleteCompany("id")
      */
-    public async deleteACompany(id: string, requestOptions?: Companies.RequestOptions): Promise<void> {
+    public async deleteCompany(id: string, requestOptions?: Companies.RequestOptions): Promise<void> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/companies/${encodeURIComponent(id)}`
+                `${encodeURIComponent(id)}/company`
             ),
             method: "DELETE",
             headers: {

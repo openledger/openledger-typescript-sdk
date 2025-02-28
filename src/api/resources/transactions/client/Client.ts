@@ -4,7 +4,9 @@
 
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
+import * as OpenLedgerClient from "../../../index";
 import urlJoin from "url-join";
+import * as serializers from "../../../../serialization/index";
 import * as errors from "../../../../errors/index";
 
 export declare namespace Transactions {
@@ -24,22 +26,30 @@ export declare namespace Transactions {
     }
 }
 
+/**
+ * Transaction management endpoints
+ */
 export class Transactions {
     constructor(protected readonly _options: Transactions.Options) {}
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
      * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.NotFoundError}
      *
      * @example
      *     await client.transactions.getTransactionsByCompany("id")
      */
-    public async getTransactionsByCompany(id: string, requestOptions?: Transactions.RequestOptions): Promise<void> {
+    public async getTransactionsByCompany(
+        id: string,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.GetIdTransactionsResponse> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/${encodeURIComponent(id)}/transactions`
+                `${encodeURIComponent(id)}/transactions`
             ),
             method: "GET",
             headers: {
@@ -58,14 +68,33 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.GetIdTransactionsResponse.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.OpenLedgerClientError({
-                statusCode: _response.error.statusCode,
-                body: _response.error.body,
-            });
+            switch (_response.error.statusCode) {
+                case 404:
+                    throw new OpenLedgerClient.NotFoundError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
         }
 
         switch (_response.error.reason) {
@@ -84,18 +113,26 @@ export class Transactions {
     }
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
+     * @param {OpenLedgerClient.Transaction} request
      * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.NotFoundError}
+     *
      * @example
-     *     await client.transactions.createANewTransaction("id")
+     *     await client.transactions.createANewTransaction("id", {})
      */
-    public async createANewTransaction(id: string, requestOptions?: Transactions.RequestOptions): Promise<void> {
+    public async createANewTransaction(
+        id: string,
+        request: OpenLedgerClient.Transaction,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.Transaction> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/${encodeURIComponent(id)}/transactions`
+                `${encodeURIComponent(id)}/transactions`
             ),
             method: "POST",
             headers: {
@@ -109,19 +146,49 @@ export class Transactions {
             },
             contentType: "application/json",
             requestType: "json",
+            body: serializers.Transaction.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.Transaction.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
-            throw new errors.OpenLedgerClientError({
-                statusCode: _response.error.statusCode,
-                body: _response.error.body,
-            });
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 404:
+                    throw new OpenLedgerClient.NotFoundError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
         }
 
         switch (_response.error.reason) {
@@ -140,18 +207,230 @@ export class Transactions {
     }
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
+     * @param {string} transactionId - Transaction ID
+     * @param {OpenLedgerClient.Transaction} request
      * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
      *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.NotFoundError}
+     *
      * @example
-     *     await client.transactions.exportTransactions("id")
+     *     await client.transactions.editATransaction("id", "transactionId", {})
      */
-    public async exportTransactions(id: string, requestOptions?: Transactions.RequestOptions): Promise<void> {
+    public async editATransaction(
+        id: string,
+        transactionId: string,
+        request: OpenLedgerClient.Transaction,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.Transaction> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/${encodeURIComponent(id)}/transactions/export`
+                `${encodeURIComponent(id)}/transactions/${encodeURIComponent(transactionId)}`
+            ),
+            method: "PUT",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: serializers.Transaction.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return serializers.Transaction.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 404:
+                    throw new OpenLedgerClient.NotFoundError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError();
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * @param {string} id - Company ID
+     * @param {OpenLedgerClient.ExportTransactionRequest} request
+     * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.NotFoundError}
+     *
+     * @example
+     *     await client.transactions.exportTransaction("id")
+     */
+    public async exportTransaction(
+        id: string,
+        request: OpenLedgerClient.ExportTransactionRequest = {},
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.ExportTransactionResponse> {
+        const { format, startDate, endDate } = request;
+        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        if (format != null) {
+            _queryParams["format"] = format;
+        }
+
+        if (startDate != null) {
+            _queryParams["startDate"] = startDate;
+        }
+
+        if (endDate != null) {
+            _queryParams["endDate"] = endDate;
+        }
+
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                `${encodeURIComponent(id)}/transactions/export`
+            ),
+            method: "GET",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+            },
+            contentType: "application/json",
+            queryParameters: _queryParams,
+            requestType: "json",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return serializers.ExportTransactionResponse.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 404:
+                    throw new OpenLedgerClient.NotFoundError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError();
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * @param {string} id - Company ID
+     * @param {string} month - Month in YYYY-MM format
+     * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.NotFoundError}
+     *
+     * @example
+     *     await client.transactions.getTransactionsByMonth("id", "month")
+     */
+    public async getTransactionsByMonth(
+        id: string,
+        month: string,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.GetTransactionsByMonthResponse> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                `${encodeURIComponent(id)}/transactions/month/${encodeURIComponent(month)}`
             ),
             method: "GET",
             headers: {
@@ -170,7 +449,101 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.GetTransactionsByMonthResponse.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                case 404:
+                    throw new OpenLedgerClient.NotFoundError(
+                        serializers.Error_.parseOrThrow(_response.error.body, {
+                            unrecognizedObjectKeys: "passthrough",
+                            allowUnrecognizedUnionMembers: true,
+                            allowUnrecognizedEnumValues: true,
+                            skipValidation: true,
+                            breadcrumbsPrefix: ["response"],
+                        })
+                    );
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError();
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * @param {string} id - Company ID
+     * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @example
+     *     await client.transactions.promptTransaction("id")
+     */
+    public async promptTransaction(
+        id: string,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<Record<string, unknown>> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                `${encodeURIComponent(id)}/transactions/prompt`
+            ),
+            method: "GET",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return serializers.transactions.promptTransaction.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
@@ -196,20 +569,23 @@ export class Transactions {
     }
 
     /**
-     * @param {string} id
+     * @param {string} id - Company ID
      * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @example
-     *     await client.transactions.classifyTransactions("id")
+     *     await client.transactions.classifyTransaction("id")
      */
-    public async classifyTransactions(id: string, requestOptions?: Transactions.RequestOptions): Promise<void> {
+    public async classifyTransaction(
+        id: string,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.Transaction[]> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                `api/v1/${encodeURIComponent(id)}/transactions/classify`
+                `${encodeURIComponent(id)}/transactions/classify`
             ),
-            method: "POST",
+            method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
@@ -226,7 +602,218 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return serializers.transactions.classifyTransaction.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
+        }
+
+        if (_response.error.reason === "status-code") {
+            throw new errors.OpenLedgerClientError({
+                statusCode: _response.error.statusCode,
+                body: _response.error.body,
+            });
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError();
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * @param {string} id - Company ID
+     * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @example
+     *     await client.transactions.generateGeneralLedger("id")
+     */
+    public async generateGeneralLedger(
+        id: string,
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<Record<string, unknown>> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                `${encodeURIComponent(id)}/transactions/general-ledger`
+            ),
+            method: "GET",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return serializers.transactions.generateGeneralLedger.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
+        }
+
+        if (_response.error.reason === "status-code") {
+            throw new errors.OpenLedgerClientError({
+                statusCode: _response.error.statusCode,
+                body: _response.error.body,
+            });
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError();
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * @param {string} id - Company ID
+     * @param {OpenLedgerClient.Transaction[]} request
+     * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @example
+     *     await client.transactions.bulkCreateTransactions("id", [{}])
+     */
+    public async bulkCreateTransactions(
+        id: string,
+        request: OpenLedgerClient.Transaction[],
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.Transaction[]> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                `${encodeURIComponent(id)}/transactions/bulk`
+            ),
+            method: "POST",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: serializers.transactions.bulkCreateTransactions.Request.jsonOrThrow(request, {
+                unrecognizedObjectKeys: "strip",
+            }),
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return serializers.transactions.bulkCreateTransactions.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
+        }
+
+        if (_response.error.reason === "status-code") {
+            throw new errors.OpenLedgerClientError({
+                statusCode: _response.error.statusCode,
+                body: _response.error.body,
+            });
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError();
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                });
+        }
+    }
+
+    /**
+     * @param {string} id - Company ID
+     * @param {OpenLedgerClient.SuggestTransactionCategoriesRequest} request
+     * @param {Transactions.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @example
+     *     await client.transactions.suggestTransactionCategories("id")
+     */
+    public async suggestTransactionCategories(
+        id: string,
+        request: OpenLedgerClient.SuggestTransactionCategoriesRequest = {},
+        requestOptions?: Transactions.RequestOptions
+    ): Promise<OpenLedgerClient.SuggestTransactionCategoriesResponseItem[]> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                `${encodeURIComponent(id)}/transactions/suggest-categories`
+            ),
+            method: "POST",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: serializers.SuggestTransactionCategoriesRequest.jsonOrThrow(request, {
+                unrecognizedObjectKeys: "strip",
+            }),
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return serializers.transactions.suggestTransactionCategories.Response.parseOrThrow(_response.body, {
+                unrecognizedObjectKeys: "passthrough",
+                allowUnrecognizedUnionMembers: true,
+                allowUnrecognizedEnumValues: true,
+                skipValidation: true,
+                breadcrumbsPrefix: ["response"],
+            });
         }
 
         if (_response.error.reason === "status-code") {
