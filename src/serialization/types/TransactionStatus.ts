@@ -9,8 +9,8 @@ import * as core from "../../core";
 export const TransactionStatus: core.serialization.Schema<
     serializers.TransactionStatus.Raw,
     OpenLedgerClient.TransactionStatus
-> = core.serialization.enum_(["PENDING", "CLEARED", "RECONCILED"]);
+> = core.serialization.enum_(["PENDING", "CLEARED"]);
 
 export declare namespace TransactionStatus {
-    type Raw = "PENDING" | "CLEARED" | "RECONCILED";
+    type Raw = "PENDING" | "CLEARED";
 }

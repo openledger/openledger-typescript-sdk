@@ -1,0 +1,1 @@
+export { BankAccountRequest } from "./BankAccountRequest";

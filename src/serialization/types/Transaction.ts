@@ -6,60 +6,32 @@ import * as serializers from "../index";
 import * as OpenLedgerClient from "../../api/index";
 import * as core from "../../core";
 import { TransactionStatus } from "./TransactionStatus";
-import { TransactionTransactionType } from "./TransactionTransactionType";
-import { TransactionLedgerType } from "./TransactionLedgerType";
-import { TransactionDirection } from "./TransactionDirection";
-import { TransactionCategorizationStatus } from "./TransactionCategorizationStatus";
 
 export const Transaction: core.serialization.ObjectSchema<serializers.Transaction.Raw, OpenLedgerClient.Transaction> =
     core.serialization.object({
         id: core.serialization.string().optional(),
-        date: core.serialization.date().optional(),
+        entityId: core.serialization.string().optional(),
+        timestamp: core.serialization.date().optional(),
         amount: core.serialization.number().optional(),
         currency: core.serialization.string().optional(),
         description: core.serialization.string().optional(),
+        debitAccountId: core.serialization.string().optional(),
+        creditAccountId: core.serialization.string().optional(),
         status: TransactionStatus.optional(),
-        createdBy: core.serialization.property("created_by", core.serialization.number().optional()),
-        updatedBy: core.serialization.property("updated_by", core.serialization.number().optional()),
-        createdAt: core.serialization.property("created_at", core.serialization.date().optional()),
-        updatedAt: core.serialization.property("updated_at", core.serialization.date().optional()),
-        bankTransactionId: core.serialization.property("bank_transaction_id", core.serialization.string().optional()),
-        transactionType: core.serialization.property("transaction_type", TransactionTransactionType.optional()),
-        ledgerType: core.serialization.property("ledger_type", TransactionLedgerType.optional()),
-        bankAccountId: core.serialization.property("bank_account_id", core.serialization.string().optional()),
-        businessId: core.serialization.property("business_id", core.serialization.string().optional()),
-        direction: TransactionDirection.optional(),
-        balance: core.serialization.number().optional(),
-        counterpartyName: core.serialization.property("counterparty_name", core.serialization.string().optional()),
-        categorizationStatus: TransactionCategorizationStatus.optional(),
-        categoryId: core.serialization.property("category_id", core.serialization.number().optional()),
-        companyId: core.serialization.property("company_id", core.serialization.string().optional()),
         metadata: core.serialization.record(core.serialization.string(), core.serialization.unknown()).optional(),
     });
 
 export declare namespace Transaction {
     interface Raw {
         id?: string | null;
-        date?: string | null;
+        entityId?: string | null;
+        timestamp?: string | null;
         amount?: number | null;
         currency?: string | null;
         description?: string | null;
+        debitAccountId?: string | null;
+        creditAccountId?: string | null;
         status?: TransactionStatus.Raw | null;
-        created_by?: number | null;
-        updated_by?: number | null;
-        created_at?: string | null;
-        updated_at?: string | null;
-        bank_transaction_id?: string | null;
-        transaction_type?: TransactionTransactionType.Raw | null;
-        ledger_type?: TransactionLedgerType.Raw | null;
-        bank_account_id?: string | null;
-        business_id?: string | null;
-        direction?: TransactionDirection.Raw | null;
-        balance?: number | null;
-        counterparty_name?: string | null;
-        categorizationStatus?: TransactionCategorizationStatus.Raw | null;
-        category_id?: number | null;
-        company_id?: string | null;
         metadata?: Record<string, unknown> | null;
     }
 }

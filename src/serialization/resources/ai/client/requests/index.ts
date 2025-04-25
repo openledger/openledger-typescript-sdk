@@ -1,0 +1,1 @@
+export { SemanticSearchRequest } from "./SemanticSearchRequest";

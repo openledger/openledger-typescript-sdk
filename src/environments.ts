@@ -3,7 +3,7 @@
  */
 
 export const OpenLedgerClientEnvironment = {
-    Default: "http://localhost:8080",
+    Default: "https://api.openledger.com/v1",
 } as const;
 
 export type OpenLedgerClientEnvironment = typeof OpenLedgerClientEnvironment.Default;

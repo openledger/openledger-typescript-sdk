@@ -5,48 +5,14 @@
 import * as OpenLedgerClient from "../index";
 
 export interface Transaction {
-    /** Unique identifier for the transaction */
     id?: string;
-    /** Date of the transaction */
-    date?: Date;
-    /** Amount of the transaction */
+    entityId?: string;
+    timestamp?: Date;
     amount?: number;
-    /** Currency of the transaction */
     currency?: string;
-    /** Description of the transaction */
     description?: string;
-    /** Status of the transaction */
+    debitAccountId?: string;
+    creditAccountId?: string;
     status?: OpenLedgerClient.TransactionStatus;
-    /** ID of the user who created the transaction */
-    createdBy?: number;
-    /** ID of the user who last updated the transaction */
-    updatedBy?: number;
-    /** Date when the transaction was created */
-    createdAt?: Date;
-    /** Date when the transaction was last updated */
-    updatedAt?: Date;
-    /** ID of the bank transaction */
-    bankTransactionId?: string;
-    /** Type of transaction */
-    transactionType?: OpenLedgerClient.TransactionTransactionType;
-    /** Ledger type of the transaction */
-    ledgerType?: OpenLedgerClient.TransactionLedgerType;
-    /** ID of the bank account */
-    bankAccountId?: string;
-    /** ID of the business */
-    businessId?: string;
-    /** Direction of the transaction */
-    direction?: OpenLedgerClient.TransactionDirection;
-    /** Balance after the transaction */
-    balance?: number;
-    /** Name of the counterparty */
-    counterpartyName?: string;
-    /** Status of categorization */
-    categorizationStatus?: OpenLedgerClient.TransactionCategorizationStatus;
-    /** ID of the category */
-    categoryId?: number;
-    /** ID of the company */
-    companyId?: string;
-    /** Additional metadata for the transaction */
     metadata?: Record<string, unknown>;
 }

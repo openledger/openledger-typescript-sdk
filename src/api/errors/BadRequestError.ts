@@ -3,10 +3,9 @@
  */
 
 import * as errors from "../../errors/index";
-import * as OpenLedgerClient from "../index";
 
 export class BadRequestError extends errors.OpenLedgerClientError {
-    constructor(body: OpenLedgerClient.Error_) {
+    constructor(body?: unknown) {
         super({
             message: "BadRequestError",
             statusCode: 400,

@@ -4,14 +4,19 @@
 
 import * as environments from "./environments";
 import * as core from "./core";
+import { Authentication } from "./api/resources/authentication/client/Client";
 import { Transactions } from "./api/resources/transactions/client/Client";
-import { Companies } from "./api/resources/companies/client/Client";
-import { Categories } from "./api/resources/categories/client/Client";
+import { Reports } from "./api/resources/reports/client/Client";
+import { Banks } from "./api/resources/banks/client/Client";
+import { Integrations } from "./api/resources/integrations/client/Client";
+import { Entities } from "./api/resources/entities/client/Client";
+import { Ai } from "./api/resources/ai/client/Client";
+import { Sandbox } from "./api/resources/sandbox/client/Client";
 
 export declare namespace OpenLedgerClientClient {
     interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
-        token: core.Supplier<core.BearerToken>;
+        token?: core.Supplier<core.BearerToken | undefined>;
         fetcher?: core.FetchFunction;
     }
 
@@ -26,7 +31,13 @@ export declare namespace OpenLedgerClientClient {
 }
 
 export class OpenLedgerClientClient {
-    constructor(protected readonly _options: OpenLedgerClientClient.Options) {}
+    constructor(protected readonly _options: OpenLedgerClientClient.Options = {}) {}
+
+    protected _authentication: Authentication | undefined;
+
+    public get authentication(): Authentication {
+        return (this._authentication ??= new Authentication(this._options));
+    }
 
     protected _transactions: Transactions | undefined;
 
@@ -34,15 +45,39 @@ export class OpenLedgerClientClient {
         return (this._transactions ??= new Transactions(this._options));
     }
 
-    protected _companies: Companies | undefined;
+    protected _reports: Reports | undefined;
 
-    public get companies(): Companies {
-        return (this._companies ??= new Companies(this._options));
+    public get reports(): Reports {
+        return (this._reports ??= new Reports(this._options));
     }
 
-    protected _categories: Categories | undefined;
+    protected _banks: Banks | undefined;
 
-    public get categories(): Categories {
-        return (this._categories ??= new Categories(this._options));
+    public get banks(): Banks {
+        return (this._banks ??= new Banks(this._options));
+    }
+
+    protected _integrations: Integrations | undefined;
+
+    public get integrations(): Integrations {
+        return (this._integrations ??= new Integrations(this._options));
+    }
+
+    protected _entities: Entities | undefined;
+
+    public get entities(): Entities {
+        return (this._entities ??= new Entities(this._options));
+    }
+
+    protected _ai: Ai | undefined;
+
+    public get ai(): Ai {
+        return (this._ai ??= new Ai(this._options));
+    }
+
+    protected _sandbox: Sandbox | undefined;
+
+    public get sandbox(): Sandbox {
+        return (this._sandbox ??= new Sandbox(this._options));
     }
 }

@@ -1,1 +1,0 @@
-export { CreateCategoryRequest } from "./CreateCategoryRequest";

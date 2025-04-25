@@ -20,10 +20,13 @@ A full reference for this library is available [here](./reference.md).
 Instantiate and use the client with the following:
 
 ```typescript
-import { OpenLedgerClientClient, OpenLedgerClient } from "openledger";
+import { OpenLedgerClientClient } from "openledger";
 
 const client = new OpenLedgerClientClient({ token: "YOUR_TOKEN" });
-await client.transactions.createANewTransaction("id", {});
+await client.authentication.generateToken({
+    clientId: "client_id",
+    clientSecret: "client_secret",
+});
 ```
 
 ## Request And Response Types
@@ -34,7 +37,7 @@ following namespace:
 ```typescript
 import { OpenLedgerClient } from "openledger";
 
-const request: OpenLedgerClient.ExportTransactionRequest = {
+const request: OpenLedgerClient.TokenRequest = {
     ...
 };
 ```
@@ -48,7 +51,7 @@ will be thrown.
 import { OpenLedgerClientError } from "openledger";
 
 try {
-    await client.transactions.createANewTransaction(...);
+    await client.authentication.generateToken(...);
 } catch (err) {
     if (err instanceof OpenLedgerClientError) {
         console.log(err.statusCode);
@@ -75,7 +78,7 @@ A request is deemed retriable when any of the following HTTP status codes is ret
 Use the `maxRetries` request option to configure this behavior.
 
 ```typescript
-const response = await client.transactions.createANewTransaction(..., {
+const response = await client.authentication.generateToken(..., {
     maxRetries: 0 // override maxRetries at the request level
 });
 ```
@@ -85,7 +88,7 @@ const response = await client.transactions.createANewTransaction(..., {
 The SDK defaults to a 60 second timeout. Use the `timeoutInSeconds` option to configure this behavior.
 
 ```typescript
-const response = await client.transactions.createANewTransaction(..., {
+const response = await client.authentication.generateToken(..., {
     timeoutInSeconds: 30 // override timeout to 30s
 });
 ```
@@ -96,7 +99,7 @@ The SDK allows users to abort requests at any point by passing in an abort signa
 
 ```typescript
 const controller = new AbortController();
-const response = await client.transactions.createANewTransaction(..., {
+const response = await client.authentication.generateToken(..., {
     abortSignal: controller.signal
 });
 controller.abort(); // aborts the request

@@ -3,8 +3,6 @@
  */
 
 export interface Error_ {
-    /** Error code */
-    code?: number;
-    /** Error message */
+    error?: string;
     message?: string;
 }

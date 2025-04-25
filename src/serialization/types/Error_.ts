@@ -8,13 +8,13 @@ import * as core from "../../core";
 
 export const Error_: core.serialization.ObjectSchema<serializers.Error_.Raw, OpenLedgerClient.Error_> =
     core.serialization.object({
-        code: core.serialization.number().optional(),
+        error: core.serialization.string().optional(),
         message: core.serialization.string().optional(),
     });
 
 export declare namespace Error_ {
     interface Raw {
-        code?: number | null;
+        error?: string | null;
         message?: string | null;
     }
 }
