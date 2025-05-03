@@ -17,7 +17,7 @@ export const PostTransactionsSearchResponsePagination: core.serialization.Object
 });
 
 export declare namespace PostTransactionsSearchResponsePagination {
-    interface Raw {
+    export interface Raw {
         total?: number | null;
         page?: number | null;
         limit?: number | null;

@@ -15,7 +15,7 @@ export const PostTransactionsResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace PostTransactionsResponse {
-    interface Raw {
+    export interface Raw {
         transaction?: Transaction.Raw | null;
     }
 }

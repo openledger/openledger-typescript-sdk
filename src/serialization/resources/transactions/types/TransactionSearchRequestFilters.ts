@@ -19,7 +19,7 @@ export const TransactionSearchRequestFilters: core.serialization.ObjectSchema<
 });
 
 export declare namespace TransactionSearchRequestFilters {
-    interface Raw {
+    export interface Raw {
         dateFrom?: string | null;
         dateTo?: string | null;
         amountMin?: number | null;

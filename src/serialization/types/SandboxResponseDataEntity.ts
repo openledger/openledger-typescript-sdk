@@ -15,7 +15,7 @@ export const SandboxResponseDataEntity: core.serialization.ObjectSchema<
 });
 
 export declare namespace SandboxResponseDataEntity {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         legal_name?: string | null;
     }

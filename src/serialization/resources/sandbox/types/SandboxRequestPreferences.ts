@@ -16,7 +16,7 @@ export const SandboxRequestPreferences: core.serialization.ObjectSchema<
 });
 
 export declare namespace SandboxRequestPreferences {
-    interface Raw {
+    export interface Raw {
         currency?: string | null;
         timezone?: string | null;
         locale?: string | null;

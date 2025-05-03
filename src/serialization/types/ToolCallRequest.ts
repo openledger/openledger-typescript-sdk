@@ -16,7 +16,7 @@ export const ToolCallRequest: core.serialization.ObjectSchema<
 });
 
 export declare namespace ToolCallRequest {
-    interface Raw {
+    export interface Raw {
         message?: string | null;
         history?: ToolCallRequestHistoryItem.Raw[] | null;
     }

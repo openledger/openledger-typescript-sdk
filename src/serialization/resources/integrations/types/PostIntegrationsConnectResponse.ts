@@ -15,7 +15,7 @@ export const PostIntegrationsConnectResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace PostIntegrationsConnectResponse {
-    interface Raw {
+    export interface Raw {
         success?: boolean | null;
         integrationId?: string | null;
     }

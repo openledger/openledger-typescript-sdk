@@ -19,7 +19,7 @@ export const SemanticSearchResponseResultsItem: core.serialization.ObjectSchema<
 });
 
 export declare namespace SemanticSearchResponseResultsItem {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         source_id?: string | null;
         source_type?: string | null;

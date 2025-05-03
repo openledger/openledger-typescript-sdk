@@ -21,7 +21,7 @@ export const EntityUpdateRequest: core.serialization.Schema<
 });
 
 export declare namespace EntityUpdateRequest {
-    interface Raw {
+    export interface Raw {
         legalName?: string | null;
         tin?: string | null;
         usState?: string | null;

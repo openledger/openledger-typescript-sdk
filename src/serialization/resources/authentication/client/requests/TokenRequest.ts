@@ -13,7 +13,7 @@ export const TokenRequest: core.serialization.Schema<serializers.TokenRequest.Ra
     });
 
 export declare namespace TokenRequest {
-    interface Raw {
+    export interface Raw {
         client_id: string;
         client_secret: string;
     }

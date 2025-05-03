@@ -15,7 +15,7 @@ export const TransactionCategorizeRequest: core.serialization.Schema<
 });
 
 export declare namespace TransactionCategorizeRequest {
-    interface Raw {
+    export interface Raw {
         transactionId: string;
         categoryId: string;
     }

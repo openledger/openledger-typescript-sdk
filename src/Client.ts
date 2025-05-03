@@ -14,68 +14,65 @@ import { Ai } from "./api/resources/ai/client/Client";
 import { Sandbox } from "./api/resources/sandbox/client/Client";
 
 export declare namespace OpenLedgerClientClient {
-    interface Options {
+    export interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
+        /** Specify a custom URL to connect the client to. */
+        baseUrl?: core.Supplier<string>;
         token?: core.Supplier<core.BearerToken | undefined>;
         fetcher?: core.FetchFunction;
     }
 
-    interface RequestOptions {
+    export interface RequestOptions {
         /** The maximum time to wait for a response in seconds. */
         timeoutInSeconds?: number;
         /** The number of times to retry the request. Defaults to 2. */
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Additional headers to include in the request. */
+        headers?: Record<string, string>;
     }
 }
 
 export class OpenLedgerClientClient {
-    constructor(protected readonly _options: OpenLedgerClientClient.Options = {}) {}
-
     protected _authentication: Authentication | undefined;
+    protected _transactions: Transactions | undefined;
+    protected _reports: Reports | undefined;
+    protected _banks: Banks | undefined;
+    protected _integrations: Integrations | undefined;
+    protected _entities: Entities | undefined;
+    protected _ai: Ai | undefined;
+    protected _sandbox: Sandbox | undefined;
+
+    constructor(protected readonly _options: OpenLedgerClientClient.Options = {}) {}
 
     public get authentication(): Authentication {
         return (this._authentication ??= new Authentication(this._options));
     }
 
-    protected _transactions: Transactions | undefined;
-
     public get transactions(): Transactions {
         return (this._transactions ??= new Transactions(this._options));
     }
-
-    protected _reports: Reports | undefined;
 
     public get reports(): Reports {
         return (this._reports ??= new Reports(this._options));
     }
 
-    protected _banks: Banks | undefined;
-
     public get banks(): Banks {
         return (this._banks ??= new Banks(this._options));
     }
-
-    protected _integrations: Integrations | undefined;
 
     public get integrations(): Integrations {
         return (this._integrations ??= new Integrations(this._options));
     }
 
-    protected _entities: Entities | undefined;
-
     public get entities(): Entities {
         return (this._entities ??= new Entities(this._options));
     }
 
-    protected _ai: Ai | undefined;
-
     public get ai(): Ai {
         return (this._ai ??= new Ai(this._options));
     }
-
-    protected _sandbox: Sandbox | undefined;
 
     public get sandbox(): Sandbox {
         return (this._sandbox ??= new Sandbox(this._options));

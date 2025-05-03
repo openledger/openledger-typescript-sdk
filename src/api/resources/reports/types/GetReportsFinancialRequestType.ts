@@ -3,7 +3,6 @@
  */
 
 export type GetReportsFinancialRequestType = "balance_sheet" | "income_statement" | "cash_flow";
-
 export const GetReportsFinancialRequestType = {
     BalanceSheet: "balance_sheet",
     IncomeStatement: "income_statement",

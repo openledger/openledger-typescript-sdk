@@ -14,7 +14,7 @@ export const IntegrationDisconnectRequest: core.serialization.Schema<
 });
 
 export declare namespace IntegrationDisconnectRequest {
-    interface Raw {
+    export interface Raw {
         integrationId: string;
     }
 }

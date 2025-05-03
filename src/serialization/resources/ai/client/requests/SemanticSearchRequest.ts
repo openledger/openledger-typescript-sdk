@@ -20,7 +20,7 @@ export const SemanticSearchRequest: core.serialization.Schema<
 });
 
 export declare namespace SemanticSearchRequest {
-    interface Raw {
+    export interface Raw {
         entityId: string;
         query: string;
         limit?: number | null;

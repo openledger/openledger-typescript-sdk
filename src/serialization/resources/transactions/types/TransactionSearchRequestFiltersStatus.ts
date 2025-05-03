@@ -12,5 +12,5 @@ export const TransactionSearchRequestFiltersStatus: core.serialization.Schema<
 > = core.serialization.enum_(["PENDING", "CLEARED"]);
 
 export declare namespace TransactionSearchRequestFiltersStatus {
-    type Raw = "PENDING" | "CLEARED";
+    export type Raw = "PENDING" | "CLEARED";
 }

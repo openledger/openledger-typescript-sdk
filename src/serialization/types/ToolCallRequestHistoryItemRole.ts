@@ -12,5 +12,5 @@ export const ToolCallRequestHistoryItemRole: core.serialization.Schema<
 > = core.serialization.enum_(["user", "assistant"]);
 
 export declare namespace ToolCallRequestHistoryItemRole {
-    type Raw = "user" | "assistant";
+    export type Raw = "user" | "assistant";
 }

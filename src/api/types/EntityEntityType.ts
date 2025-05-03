@@ -3,7 +3,6 @@
  */
 
 export type EntityEntityType = "LLC" | "CORPORATION" | "PARTNERSHIP" | "SOLE_PROPRIETORSHIP" | "NON_PROFIT";
-
 export const EntityEntityType = {
     Llc: "LLC",
     Corporation: "CORPORATION",

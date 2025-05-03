@@ -12,5 +12,5 @@ export const GetReportsFinancialRequestType: core.serialization.Schema<
 > = core.serialization.enum_(["balance_sheet", "income_statement", "cash_flow"]);
 
 export declare namespace GetReportsFinancialRequestType {
-    type Raw = "balance_sheet" | "income_statement" | "cash_flow";
+    export type Raw = "balance_sheet" | "income_statement" | "cash_flow";
 }

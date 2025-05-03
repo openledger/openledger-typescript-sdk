@@ -17,7 +17,7 @@ export const GeneralLedgerAccountsItemBalance: core.serialization.ObjectSchema<
 });
 
 export declare namespace GeneralLedgerAccountsItemBalance {
-    interface Raw {
+    export interface Raw {
         debits_pending?: string | null;
         debits_posted?: string | null;
         credits_pending?: string | null;

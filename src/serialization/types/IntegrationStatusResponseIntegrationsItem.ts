@@ -17,7 +17,7 @@ export const IntegrationStatusResponseIntegrationsItem: core.serialization.Objec
 });
 
 export declare namespace IntegrationStatusResponseIntegrationsItem {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         name?: string | null;
         status?: string | null;

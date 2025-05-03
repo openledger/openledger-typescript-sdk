@@ -22,7 +22,7 @@ export const SandboxResponseData: core.serialization.ObjectSchema<
 });
 
 export declare namespace SandboxResponseData {
-    interface Raw {
+    export interface Raw {
         developer?: SandboxResponseDataDeveloper.Raw | null;
         entity?: SandboxResponseDataEntity.Raw | null;
         ledger?: SandboxResponseDataLedger.Raw | null;

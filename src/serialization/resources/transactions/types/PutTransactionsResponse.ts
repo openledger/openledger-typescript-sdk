@@ -16,7 +16,7 @@ export const PutTransactionsResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace PutTransactionsResponse {
-    interface Raw {
+    export interface Raw {
         message?: string | null;
         transaction?: Transaction.Raw | null;
     }

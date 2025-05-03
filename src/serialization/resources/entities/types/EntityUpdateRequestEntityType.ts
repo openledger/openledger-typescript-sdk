@@ -12,5 +12,5 @@ export const EntityUpdateRequestEntityType: core.serialization.Schema<
 > = core.serialization.enum_(["LLC", "CORPORATION", "PARTNERSHIP", "SOLE_PROPRIETORSHIP", "NON_PROFIT"]);
 
 export declare namespace EntityUpdateRequestEntityType {
-    type Raw = "LLC" | "CORPORATION" | "PARTNERSHIP" | "SOLE_PROPRIETORSHIP" | "NON_PROFIT";
+    export type Raw = "LLC" | "CORPORATION" | "PARTNERSHIP" | "SOLE_PROPRIETORSHIP" | "NON_PROFIT";
 }

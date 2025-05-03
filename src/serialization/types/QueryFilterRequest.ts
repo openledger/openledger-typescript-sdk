@@ -14,7 +14,7 @@ export const QueryFilterRequest: core.serialization.ObjectSchema<
 });
 
 export declare namespace QueryFilterRequest {
-    interface Raw {
+    export interface Raw {
         message?: string | null;
     }
 }

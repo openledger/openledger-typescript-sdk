@@ -15,7 +15,7 @@ export const PostEntitiesResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace PostEntitiesResponse {
-    interface Raw {
+    export interface Raw {
         entity?: Entity.Raw | null;
     }
 }

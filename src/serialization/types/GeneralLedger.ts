@@ -20,7 +20,7 @@ export const GeneralLedger: core.serialization.ObjectSchema<
 });
 
 export declare namespace GeneralLedger {
-    interface Raw {
+    export interface Raw {
         accounts?: GeneralLedgerAccountsItem.Raw[] | null;
         entries?: Record<string, unknown>[] | null;
         pdf_url?: string | null;

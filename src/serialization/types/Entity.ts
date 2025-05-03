@@ -24,7 +24,7 @@ export const Entity: core.serialization.ObjectSchema<serializers.Entity.Raw, Ope
     });
 
 export declare namespace Entity {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         externalId?: string | null;
         legalName?: string | null;

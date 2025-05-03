@@ -14,7 +14,7 @@ export const PostIntegrationsDisconnectResponse: core.serialization.ObjectSchema
 });
 
 export declare namespace PostIntegrationsDisconnectResponse {
-    interface Raw {
+    export interface Raw {
         success?: boolean | null;
     }
 }

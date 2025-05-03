@@ -10,19 +10,23 @@ import * as serializers from "../../../../serialization/index";
 import * as errors from "../../../../errors/index";
 
 export declare namespace Entities {
-    interface Options {
+    export interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
+        /** Specify a custom URL to connect the client to. */
+        baseUrl?: core.Supplier<string>;
         token?: core.Supplier<core.BearerToken | undefined>;
         fetcher?: core.FetchFunction;
     }
 
-    interface RequestOptions {
+    export interface RequestOptions {
         /** The maximum time to wait for a response in seconds. */
         timeoutInSeconds?: number;
         /** The number of times to retry the request. Defaults to 2. */
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Additional headers to include in the request. */
+        headers?: Record<string, string>;
     }
 }
 
@@ -43,28 +47,36 @@ export class Entities {
      *         entityId: "entityId"
      *     })
      */
-    public async getEntityDetails(
+    public getEntityDetails(
         request: OpenLedgerClient.GetEntitiesRequest,
-        requestOptions?: Entities.RequestOptions
-    ): Promise<OpenLedgerClient.GetEntitiesResponse> {
+        requestOptions?: Entities.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.GetEntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getEntityDetails(request, requestOptions));
+    }
+
+    private async __getEntityDetails(
+        request: OpenLedgerClient.GetEntitiesRequest,
+        requestOptions?: Entities.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GetEntitiesResponse>> {
         const { entityId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities"
+                "entities",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -74,25 +86,29 @@ export class Entities {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.GetEntitiesResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.GetEntitiesResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -102,12 +118,14 @@ export class Entities {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -125,25 +143,33 @@ export class Entities {
      *         legalName: "legalName"
      *     })
      */
-    public async createEntity(
+    public createEntity(
         request: OpenLedgerClient.EntityCreateRequest,
-        requestOptions?: Entities.RequestOptions
-    ): Promise<OpenLedgerClient.PostEntitiesResponse> {
+        requestOptions?: Entities.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PostEntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createEntity(request, requestOptions));
+    }
+
+    private async __createEntity(
+        request: OpenLedgerClient.EntityCreateRequest,
+        requestOptions?: Entities.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostEntitiesResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities"
+                "entities",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             requestType: "json",
@@ -153,23 +179,27 @@ export class Entities {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.PostEntitiesResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.PostEntitiesResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -179,12 +209,14 @@ export class Entities {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling POST /entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -203,28 +235,36 @@ export class Entities {
      *         entityId: "entityId"
      *     })
      */
-    public async updateEntity(
+    public updateEntity(
         request: OpenLedgerClient.EntityUpdateRequest,
-        requestOptions?: Entities.RequestOptions
-    ): Promise<OpenLedgerClient.PutEntitiesResponse> {
+        requestOptions?: Entities.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PutEntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__updateEntity(request, requestOptions));
+    }
+
+    private async __updateEntity(
+        request: OpenLedgerClient.EntityUpdateRequest,
+        requestOptions?: Entities.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PutEntitiesResponse>> {
         const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities"
+                "entities",
             ),
             method: "PUT",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -235,25 +275,29 @@ export class Entities {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.PutEntitiesResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.PutEntitiesResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -263,12 +307,14 @@ export class Entities {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -287,28 +333,36 @@ export class Entities {
      *         entityId: "entityId"
      *     })
      */
-    public async deleteEntity(
+    public deleteEntity(
         request: OpenLedgerClient.DeleteEntitiesRequest,
-        requestOptions?: Entities.RequestOptions
-    ): Promise<OpenLedgerClient.DeleteEntitiesResponse> {
+        requestOptions?: Entities.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.DeleteEntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__deleteEntity(request, requestOptions));
+    }
+
+    private async __deleteEntity(
+        request: OpenLedgerClient.DeleteEntitiesRequest,
+        requestOptions?: Entities.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.DeleteEntitiesResponse>> {
         const { entityId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities"
+                "entities",
             ),
             method: "DELETE",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -318,25 +372,29 @@ export class Entities {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.DeleteEntitiesResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.DeleteEntitiesResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -346,12 +404,14 @@ export class Entities {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling DELETE /entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

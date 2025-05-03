@@ -20,7 +20,7 @@ export const GeneralLedgerAccountsItem: core.serialization.ObjectSchema<
 });
 
 export declare namespace GeneralLedgerAccountsItem {
-    interface Raw {
+    export interface Raw {
         name?: string | null;
         type?: string | null;
         financialType?: string | null;

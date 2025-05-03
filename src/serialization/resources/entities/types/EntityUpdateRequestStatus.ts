@@ -12,5 +12,5 @@ export const EntityUpdateRequestStatus: core.serialization.Schema<
 > = core.serialization.enum_(["ACTIVE", "INACTIVE"]);
 
 export declare namespace EntityUpdateRequestStatus {
-    type Raw = "ACTIVE" | "INACTIVE";
+    export type Raw = "ACTIVE" | "INACTIVE";
 }

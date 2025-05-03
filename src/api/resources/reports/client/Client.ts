@@ -5,24 +5,28 @@
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
 import * as OpenLedgerClient from "../../../index";
-import urlJoin from "url-join";
 import * as serializers from "../../../../serialization/index";
+import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
 export declare namespace Reports {
-    interface Options {
+    export interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
+        /** Specify a custom URL to connect the client to. */
+        baseUrl?: core.Supplier<string>;
         token?: core.Supplier<core.BearerToken | undefined>;
         fetcher?: core.FetchFunction;
     }
 
-    interface RequestOptions {
+    export interface RequestOptions {
         /** The maximum time to wait for a response in seconds. */
         timeoutInSeconds?: number;
         /** The number of times to retry the request. Defaults to 2. */
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Additional headers to include in the request. */
+        headers?: Record<string, string>;
     }
 }
 
@@ -43,12 +47,19 @@ export class Reports {
      *         entityId: "entityId"
      *     })
      */
-    public async getFinancialReports(
+    public getFinancialReports(
         request: OpenLedgerClient.GetReportsFinancialRequest,
-        requestOptions?: Reports.RequestOptions
-    ): Promise<OpenLedgerClient.FinancialReport> {
+        requestOptions?: Reports.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.FinancialReport> {
+        return core.HttpResponsePromise.fromPromise(this.__getFinancialReports(request, requestOptions));
+    }
+
+    private async __getFinancialReports(
+        request: OpenLedgerClient.GetReportsFinancialRequest,
+        requestOptions?: Reports.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.FinancialReport>> {
         const { entityId, month, year, type: type_ } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         if (month != null) {
             _queryParams["month"] = month;
@@ -59,24 +70,27 @@ export class Reports {
         }
 
         if (type_ != null) {
-            _queryParams["type"] = type_;
+            _queryParams["type"] = serializers.GetReportsFinancialRequestType.jsonOrThrow(type_, {
+                unrecognizedObjectKeys: "strip",
+            });
         }
 
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "reports/financial"
+                "reports/financial",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -86,25 +100,29 @@ export class Reports {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.FinancialReport.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.FinancialReport.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -114,12 +132,14 @@ export class Reports {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /reports/financial.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -138,12 +158,19 @@ export class Reports {
      *         entityId: "entityId"
      *     })
      */
-    public async generateGeneralLedger(
+    public generateGeneralLedger(
         request: OpenLedgerClient.GetReportsGeneralLedgerRequest,
-        requestOptions?: Reports.RequestOptions
-    ): Promise<OpenLedgerClient.GeneralLedger> {
+        requestOptions?: Reports.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.GeneralLedger> {
+        return core.HttpResponsePromise.fromPromise(this.__generateGeneralLedger(request, requestOptions));
+    }
+
+    private async __generateGeneralLedger(
+        request: OpenLedgerClient.GetReportsGeneralLedgerRequest,
+        requestOptions?: Reports.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GeneralLedger>> {
         const { entityId, month, year } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         if (month != null) {
             _queryParams["month"] = month;
@@ -155,19 +182,20 @@ export class Reports {
 
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "reports/general-ledger"
+                "reports/general-ledger",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -177,25 +205,29 @@ export class Reports {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.GeneralLedger.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.GeneralLedger.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -205,12 +237,16 @@ export class Reports {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling GET /reports/general-ledger.",
+                );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

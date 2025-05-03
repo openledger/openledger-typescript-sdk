@@ -15,7 +15,7 @@ export const IntegrationStatusResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace IntegrationStatusResponse {
-    interface Raw {
+    export interface Raw {
         integrations?: IntegrationStatusResponseIntegrationsItem.Raw[] | null;
     }
 }

@@ -12,5 +12,5 @@ export const EntityCreateRequestStatus: core.serialization.Schema<
 > = core.serialization.enum_(["ACTIVE", "INACTIVE"]);
 
 export declare namespace EntityCreateRequestStatus {
-    type Raw = "ACTIVE" | "INACTIVE";
+    export type Raw = "ACTIVE" | "INACTIVE";
 }

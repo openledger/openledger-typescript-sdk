@@ -13,7 +13,7 @@ export const Error_: core.serialization.ObjectSchema<serializers.Error_.Raw, Ope
     });
 
 export declare namespace Error_ {
-    interface Raw {
+    export interface Raw {
         error?: string | null;
         message?: string | null;
     }

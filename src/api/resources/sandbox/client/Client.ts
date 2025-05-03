@@ -10,19 +10,23 @@ import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
 export declare namespace Sandbox {
-    interface Options {
+    export interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
+        /** Specify a custom URL to connect the client to. */
+        baseUrl?: core.Supplier<string>;
         token?: core.Supplier<core.BearerToken | undefined>;
         fetcher?: core.FetchFunction;
     }
 
-    interface RequestOptions {
+    export interface RequestOptions {
         /** The maximum time to wait for a response in seconds. */
         timeoutInSeconds?: number;
         /** The number of times to retry the request. Defaults to 2. */
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Additional headers to include in the request. */
+        headers?: Record<string, string>;
     }
 }
 
@@ -44,25 +48,33 @@ export class Sandbox {
      *         developerId: "developer_id"
      *     })
      */
-    public async createSandboxEnvironment(
+    public createSandboxEnvironment(
         request: OpenLedgerClient.SandboxRequest,
-        requestOptions?: Sandbox.RequestOptions
-    ): Promise<OpenLedgerClient.SandboxResponse> {
+        requestOptions?: Sandbox.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.SandboxResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createSandboxEnvironment(request, requestOptions));
+    }
+
+    private async __createSandboxEnvironment(
+        request: OpenLedgerClient.SandboxRequest,
+        requestOptions?: Sandbox.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.SandboxResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "sandbox"
+                "sandbox",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             requestType: "json",
@@ -72,25 +84,29 @@ export class Sandbox {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.SandboxResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.SandboxResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 500:
-                    throw new OpenLedgerClient.InternalServerError(_response.error.body);
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -100,12 +116,14 @@ export class Sandbox {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling POST /sandbox.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

@@ -16,7 +16,7 @@ export const ToolCallRequestHistoryItem: core.serialization.ObjectSchema<
 });
 
 export declare namespace ToolCallRequestHistoryItem {
-    interface Raw {
+    export interface Raw {
         role?: ToolCallRequestHistoryItemRole.Raw | null;
         content?: string | null;
     }

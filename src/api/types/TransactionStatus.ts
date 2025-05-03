@@ -3,7 +3,6 @@
  */
 
 export type TransactionStatus = "PENDING" | "CLEARED";
-
 export const TransactionStatus = {
     Pending: "PENDING",
     Cleared: "CLEARED",

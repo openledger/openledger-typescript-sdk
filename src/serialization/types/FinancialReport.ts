@@ -18,7 +18,7 @@ export const FinancialReport: core.serialization.ObjectSchema<
 });
 
 export declare namespace FinancialReport {
-    interface Raw {
+    export interface Raw {
         balanceSheet?: Record<string, unknown> | null;
         incomeStatement?: Record<string, unknown> | null;
         cashFlowStatement?: Record<string, unknown> | null;

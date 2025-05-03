@@ -15,7 +15,7 @@ export const BankAccountResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace BankAccountResponse {
-    interface Raw {
+    export interface Raw {
         accounts?: BankAccountResponseAccountsItem.Raw[] | null;
     }
 }

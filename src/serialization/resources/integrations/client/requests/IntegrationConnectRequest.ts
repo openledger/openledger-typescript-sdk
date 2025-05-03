@@ -15,7 +15,7 @@ export const IntegrationConnectRequest: core.serialization.Schema<
 });
 
 export declare namespace IntegrationConnectRequest {
-    interface Raw {
+    export interface Raw {
         provider: string;
         authorization: Record<string, unknown>;
     }

@@ -8,7 +8,6 @@ export type EntityCreateRequestEntityType =
     | "PARTNERSHIP"
     | "SOLE_PROPRIETORSHIP"
     | "NON_PROFIT";
-
 export const EntityCreateRequestEntityType = {
     Llc: "LLC",
     Corporation: "CORPORATION",

@@ -10,19 +10,23 @@ import * as serializers from "../../../../serialization/index";
 import * as errors from "../../../../errors/index";
 
 export declare namespace Transactions {
-    interface Options {
+    export interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
+        /** Specify a custom URL to connect the client to. */
+        baseUrl?: core.Supplier<string>;
         token?: core.Supplier<core.BearerToken | undefined>;
         fetcher?: core.FetchFunction;
     }
 
-    interface RequestOptions {
+    export interface RequestOptions {
         /** The maximum time to wait for a response in seconds. */
         timeoutInSeconds?: number;
         /** The number of times to retry the request. Defaults to 2. */
         maxRetries?: number;
         /** A hook to abort the request. */
         abortSignal?: AbortSignal;
+        /** Additional headers to include in the request. */
+        headers?: Record<string, string>;
     }
 }
 
@@ -42,28 +46,36 @@ export class Transactions {
      *         entityId: "entityId"
      *     })
      */
-    public async getTransactionsByCompany(
+    public getTransactionsByCompany(
         request: OpenLedgerClient.GetTransactionsRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.Transaction[]> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.Transaction[]> {
+        return core.HttpResponsePromise.fromPromise(this.__getTransactionsByCompany(request, requestOptions));
+    }
+
+    private async __getTransactionsByCompany(
+        request: OpenLedgerClient.GetTransactionsRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.Transaction[]>> {
         const { entityId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions"
+                "transactions",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -73,23 +85,27 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.transactions.getTransactionsByCompany.Response.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.transactions.getTransactionsByCompany.Response.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -99,12 +115,14 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /transactions.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -126,28 +144,36 @@ export class Transactions {
      *         creditAccountId: "creditAccountId"
      *     })
      */
-    public async createTransaction(
+    public createTransaction(
         request: OpenLedgerClient.TransactionRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.PostTransactionsResponse> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PostTransactionsResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createTransaction(request, requestOptions));
+    }
+
+    private async __createTransaction(
+        request: OpenLedgerClient.TransactionRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostTransactionsResponse>> {
         const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions"
+                "transactions",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -158,23 +184,27 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.PostTransactionsResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.PostTransactionsResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -184,12 +214,14 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling POST /transactions.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -208,28 +240,36 @@ export class Transactions {
      *         transactionId: "transactionId"
      *     })
      */
-    public async approveTransaction(
+    public approveTransaction(
         request: OpenLedgerClient.PutTransactionsRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.PutTransactionsResponse> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PutTransactionsResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__approveTransaction(request, requestOptions));
+    }
+
+    private async __approveTransaction(
+        request: OpenLedgerClient.PutTransactionsRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PutTransactionsResponse>> {
         const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions"
+                "transactions",
             ),
             method: "PUT",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -240,23 +280,27 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.PutTransactionsResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.PutTransactionsResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -266,12 +310,14 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /transactions.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -290,29 +336,37 @@ export class Transactions {
      *         transactionId: "transactionId"
      *     })
      */
-    public async deleteTransaction(
+    public deleteTransaction(
         request: OpenLedgerClient.DeleteTransactionsRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.DeleteTransactionsResponse> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.DeleteTransactionsResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__deleteTransaction(request, requestOptions));
+    }
+
+    private async __deleteTransaction(
+        request: OpenLedgerClient.DeleteTransactionsRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.DeleteTransactionsResponse>> {
         const { entityId, transactionId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         _queryParams["transactionId"] = transactionId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions"
+                "transactions",
             ),
             method: "DELETE",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -322,23 +376,27 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.DeleteTransactionsResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.DeleteTransactionsResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -348,12 +406,14 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling DELETE /transactions.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -373,30 +433,38 @@ export class Transactions {
      *         year: "year"
      *     })
      */
-    public async getTransactionsByMonth(
+    public getTransactionsByMonth(
         request: OpenLedgerClient.GetTransactionsByMonthRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<void> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<void> {
+        return core.HttpResponsePromise.fromPromise(this.__getTransactionsByMonth(request, requestOptions));
+    }
+
+    private async __getTransactionsByMonth(
+        request: OpenLedgerClient.GetTransactionsByMonthRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<void>> {
         const { entityId, month, year } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         _queryParams["month"] = month;
         _queryParams["year"] = year;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions/by-month"
+                "transactions/by-month",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -406,17 +474,18 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return;
+            return { data: undefined, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -426,12 +495,16 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling GET /transactions/by-month.",
+                );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -452,28 +525,36 @@ export class Transactions {
      *         categoryId: "categoryId"
      *     })
      */
-    public async categorizeTransaction(
+    public categorizeTransaction(
         request: OpenLedgerClient.TransactionCategorizeRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.PostTransactionsCategorizeResponse> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PostTransactionsCategorizeResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__categorizeTransaction(request, requestOptions));
+    }
+
+    private async __categorizeTransaction(
+        request: OpenLedgerClient.TransactionCategorizeRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostTransactionsCategorizeResponse>> {
         const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions/categorize"
+                "transactions/categorize",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -484,25 +565,29 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.PostTransactionsCategorizeResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.PostTransactionsCategorizeResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
-                    throw new OpenLedgerClient.NotFoundError(_response.error.body);
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -512,12 +597,16 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling POST /transactions/categorize.",
+                );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -535,28 +624,36 @@ export class Transactions {
      *         entityId: "entityId"
      *     })
      */
-    public async searchTransactions(
+    public searchTransactions(
         request: OpenLedgerClient.TransactionSearchRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.PostTransactionsSearchResponse> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PostTransactionsSearchResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__searchTransactions(request, requestOptions));
+    }
+
+    private async __searchTransactions(
+        request: OpenLedgerClient.TransactionSearchRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostTransactionsSearchResponse>> {
         const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions/search"
+                "transactions/search",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -567,23 +664,27 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.PostTransactionsSearchResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.PostTransactionsSearchResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -593,12 +694,16 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling POST /transactions/search.",
+                );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }
@@ -617,29 +722,37 @@ export class Transactions {
      *         prompt: "prompt"
      *     })
      */
-    public async chatWithTransactions(
+    public chatWithTransactions(
         request: OpenLedgerClient.GetTransactionsChatRequest,
-        requestOptions?: Transactions.RequestOptions
-    ): Promise<OpenLedgerClient.GetTransactionsChatResponse> {
+        requestOptions?: Transactions.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.GetTransactionsChatResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__chatWithTransactions(request, requestOptions));
+    }
+
+    private async __chatWithTransactions(
+        request: OpenLedgerClient.GetTransactionsChatRequest,
+        requestOptions?: Transactions.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GetTransactionsChatResponse>> {
         const { entityId, prompt } = request;
-        const _queryParams: Record<string, string | string[] | object | object[]> = {};
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
         _queryParams["prompt"] = prompt;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
-                (await core.Supplier.get(this._options.environment)) ??
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "transactions/chat"
+                "transactions/chat",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.40.8",
-                "User-Agent": "@openledger/typescript-sdk/0.40.8",
+                "X-Fern-SDK-Version": "0.0.35",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
             },
             contentType: "application/json",
             queryParameters: _queryParams,
@@ -649,23 +762,27 @@ export class Transactions {
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
-            return serializers.GetTransactionsChatResponse.parseOrThrow(_response.body, {
-                unrecognizedObjectKeys: "passthrough",
-                allowUnrecognizedUnionMembers: true,
-                allowUnrecognizedEnumValues: true,
-                skipValidation: true,
-                breadcrumbsPrefix: ["response"],
-            });
+            return {
+                data: serializers.GetTransactionsChatResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
                 case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body);
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
                         body: _response.error.body,
+                        rawResponse: _response.rawResponse,
                     });
             }
         }
@@ -675,12 +792,14 @@ export class Transactions {
                 throw new errors.OpenLedgerClientError({
                     statusCode: _response.error.statusCode,
                     body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError();
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /transactions/chat.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
                 });
         }
     }

@@ -15,7 +15,7 @@ export const DeleteEntitiesResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace DeleteEntitiesResponse {
-    interface Raw {
+    export interface Raw {
         success?: boolean | null;
         message?: string | null;
     }

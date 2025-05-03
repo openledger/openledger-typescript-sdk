@@ -14,7 +14,7 @@ export const DeleteTransactionsResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace DeleteTransactionsResponse {
-    interface Raw {
+    export interface Raw {
         message?: string | null;
     }
 }

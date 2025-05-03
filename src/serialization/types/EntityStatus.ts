@@ -10,5 +10,5 @@ export const EntityStatus: core.serialization.Schema<serializers.EntityStatus.Ra
     core.serialization.enum_(["ACTIVE", "INACTIVE"]);
 
 export declare namespace EntityStatus {
-    type Raw = "ACTIVE" | "INACTIVE";
+    export type Raw = "ACTIVE" | "INACTIVE";
 }

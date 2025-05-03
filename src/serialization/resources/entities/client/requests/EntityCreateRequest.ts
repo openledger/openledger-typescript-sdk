@@ -22,7 +22,7 @@ export const EntityCreateRequest: core.serialization.Schema<
 });
 
 export declare namespace EntityCreateRequest {
-    interface Raw {
+    export interface Raw {
         externalId?: string | null;
         legalName: string;
         tin?: string | null;

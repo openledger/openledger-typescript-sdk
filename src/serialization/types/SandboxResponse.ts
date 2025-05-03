@@ -16,7 +16,7 @@ export const SandboxResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace SandboxResponse {
-    interface Raw {
+    export interface Raw {
         success?: boolean | null;
         data?: SandboxResponseData.Raw | null;
     }

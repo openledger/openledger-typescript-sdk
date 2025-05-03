@@ -12,5 +12,5 @@ export const TransactionStatus: core.serialization.Schema<
 > = core.serialization.enum_(["PENDING", "CLEARED"]);
 
 export declare namespace TransactionStatus {
-    type Raw = "PENDING" | "CLEARED";
+    export type Raw = "PENDING" | "CLEARED";
 }

@@ -3,7 +3,6 @@
  */
 
 export type ToolCallRequestHistoryItemRole = "user" | "assistant";
-
 export const ToolCallRequestHistoryItemRole = {
     User: "user",
     Assistant: "assistant",

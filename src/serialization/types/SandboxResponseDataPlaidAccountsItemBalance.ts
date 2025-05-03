@@ -15,7 +15,7 @@ export const SandboxResponseDataPlaidAccountsItemBalance: core.serialization.Obj
 });
 
 export declare namespace SandboxResponseDataPlaidAccountsItemBalance {
-    interface Raw {
+    export interface Raw {
         available?: number | null;
         current?: number | null;
     }

@@ -3,8 +3,8 @@
  */
 
 export class OpenLedgerClientTimeoutError extends Error {
-    constructor() {
-        super("Timeout");
+    constructor(message: string) {
+        super(message);
         Object.setPrototypeOf(this, OpenLedgerClientTimeoutError.prototype);
     }
 }

@@ -18,7 +18,7 @@ export const SemanticSearchResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace SemanticSearchResponse {
-    interface Raw {
+    export interface Raw {
         success?: boolean | null;
         query?: string | null;
         entityId?: string | null;

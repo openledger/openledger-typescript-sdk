@@ -14,7 +14,7 @@ export const BankAccountRequest: core.serialization.Schema<
 });
 
 export declare namespace BankAccountRequest {
-    interface Raw {
+    export interface Raw {
         public_token: string;
     }
 }

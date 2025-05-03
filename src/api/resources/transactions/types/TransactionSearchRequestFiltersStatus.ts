@@ -3,7 +3,6 @@
  */
 
 export type TransactionSearchRequestFiltersStatus = "PENDING" | "CLEARED";
-
 export const TransactionSearchRequestFiltersStatus = {
     Pending: "PENDING",
     Cleared: "CLEARED",

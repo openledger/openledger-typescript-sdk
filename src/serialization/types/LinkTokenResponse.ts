@@ -15,7 +15,7 @@ export const LinkTokenResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace LinkTokenResponse {
-    interface Raw {
+    export interface Raw {
         link_token?: string | null;
         expiration?: string | null;
     }

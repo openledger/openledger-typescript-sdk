@@ -22,7 +22,7 @@ export const TransactionRequest: core.serialization.Schema<
 });
 
 export declare namespace TransactionRequest {
-    interface Raw {
+    export interface Raw {
         date?: string | null;
         amount: number;
         currency?: string | null;

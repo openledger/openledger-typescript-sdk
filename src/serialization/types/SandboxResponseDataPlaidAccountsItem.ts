@@ -20,7 +20,7 @@ export const SandboxResponseDataPlaidAccountsItem: core.serialization.ObjectSche
 });
 
 export declare namespace SandboxResponseDataPlaidAccountsItem {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         name?: string | null;
         mask?: string | null;

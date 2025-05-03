@@ -18,7 +18,7 @@ export const TransactionSearchRequest: core.serialization.Schema<
 });
 
 export declare namespace TransactionSearchRequest {
-    interface Raw {
+    export interface Raw {
         query?: string | null;
         filters?: TransactionSearchRequestFilters.Raw | null;
         page?: number | null;

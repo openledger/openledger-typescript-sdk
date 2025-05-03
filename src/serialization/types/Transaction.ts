@@ -22,7 +22,7 @@ export const Transaction: core.serialization.ObjectSchema<serializers.Transactio
     });
 
 export declare namespace Transaction {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         entityId?: string | null;
         timestamp?: string | null;

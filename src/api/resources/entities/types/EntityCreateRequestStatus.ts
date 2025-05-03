@@ -3,7 +3,6 @@
  */
 
 export type EntityCreateRequestStatus = "ACTIVE" | "INACTIVE";
-
 export const EntityCreateRequestStatus = {
     Active: "ACTIVE",
     Inactive: "INACTIVE",

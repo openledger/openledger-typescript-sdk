@@ -16,7 +16,7 @@ export const FinancialReportPdfUrls: core.serialization.ObjectSchema<
 });
 
 export declare namespace FinancialReportPdfUrls {
-    interface Raw {
+    export interface Raw {
         profit_loss?: string | null;
         balance_sheet?: string | null;
         cash_flow?: string | null;

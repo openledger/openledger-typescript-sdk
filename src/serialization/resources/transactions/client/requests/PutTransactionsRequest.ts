@@ -14,7 +14,7 @@ export const PutTransactionsRequest: core.serialization.Schema<
 });
 
 export declare namespace PutTransactionsRequest {
-    interface Raw {
+    export interface Raw {
         transactionId: string;
     }
 }

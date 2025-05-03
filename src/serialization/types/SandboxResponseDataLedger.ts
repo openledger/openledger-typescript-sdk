@@ -15,7 +15,7 @@ export const SandboxResponseDataLedger: core.serialization.ObjectSchema<
 });
 
 export declare namespace SandboxResponseDataLedger {
-    interface Raw {
+    export interface Raw {
         id?: string | null;
         name?: string | null;
     }

@@ -16,7 +16,7 @@ export const GetTransactionsChatResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace GetTransactionsChatResponse {
-    interface Raw {
+    export interface Raw {
         response?: string | null;
         transactions?: Transaction.Raw[] | null;
     }

@@ -18,7 +18,7 @@ export const SandboxRequest: core.serialization.Schema<
 });
 
 export declare namespace SandboxRequest {
-    interface Raw {
+    export interface Raw {
         name: string;
         developer_id: string;
         industry?: string | null;

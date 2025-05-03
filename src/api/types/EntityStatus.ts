@@ -3,7 +3,6 @@
  */
 
 export type EntityStatus = "ACTIVE" | "INACTIVE";
-
 export const EntityStatus = {
     Active: "ACTIVE",
     Inactive: "INACTIVE",

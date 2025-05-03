@@ -17,7 +17,7 @@ export const PostTransactionsSearchResponse: core.serialization.ObjectSchema<
 });
 
 export declare namespace PostTransactionsSearchResponse {
-    interface Raw {
+    export interface Raw {
         transactions?: Transaction.Raw[] | null;
         pagination?: PostTransactionsSearchResponsePagination.Raw | null;
     }
