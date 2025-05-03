@@ -1,6 +1,6 @@
 {
     "name": "@openledger/typescript-sdk",
-    "version": "0.0.32",
+    "version": "0.0.33",
     "private": false,
     "repository": "https://github.com/openledger/openledger-typescript-sdk",
     "main": "./index.js",
