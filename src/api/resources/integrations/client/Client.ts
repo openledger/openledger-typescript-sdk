@@ -14,7 +14,7 @@ export declare namespace Integrations {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
-        token?: core.Supplier<core.BearerToken | undefined>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -31,15 +31,16 @@ export declare namespace Integrations {
 }
 
 export class Integrations {
-    constructor(protected readonly _options: Integrations.Options = {}) {}
+    constructor(protected readonly _options: Integrations.Options) {}
 
     /**
-     * Get status of all integrations for an entity
+     * Retrieves the status of all integrations for an entity
      *
-     * @param {OpenLedgerClient.GetIntegrationsStatusRequest} request
+     * @param {OpenLedgerClient.GetV1IntegrationsStatusRequest} request
      * @param {Integrations.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
      *     await client.integrations.getIntegrationStatus({
@@ -47,16 +48,16 @@ export class Integrations {
      *     })
      */
     public getIntegrationStatus(
-        request: OpenLedgerClient.GetIntegrationsStatusRequest,
+        request: OpenLedgerClient.GetV1IntegrationsStatusRequest,
         requestOptions?: Integrations.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.IntegrationStatusResponse> {
+    ): core.HttpResponsePromise<OpenLedgerClient.GetV1IntegrationsStatusResponse> {
         return core.HttpResponsePromise.fromPromise(this.__getIntegrationStatus(request, requestOptions));
     }
 
     private async __getIntegrationStatus(
-        request: OpenLedgerClient.GetIntegrationsStatusRequest,
+        request: OpenLedgerClient.GetV1IntegrationsStatusRequest,
         requestOptions?: Integrations.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.IntegrationStatusResponse>> {
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GetV1IntegrationsStatusResponse>> {
         const { entityId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
@@ -65,14 +66,15 @@ export class Integrations {
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "integrations/status",
+                "v1/integrations/status",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -86,109 +88,7 @@ export class Integrations {
         });
         if (_response.ok) {
             return {
-                data: serializers.IntegrationStatusResponse.parseOrThrow(_response.body, {
-                    unrecognizedObjectKeys: "passthrough",
-                    allowUnrecognizedUnionMembers: true,
-                    allowUnrecognizedEnumValues: true,
-                    skipValidation: true,
-                    breadcrumbsPrefix: ["response"],
-                }),
-                rawResponse: _response.rawResponse,
-            };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
-                default:
-                    throw new errors.OpenLedgerClientError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.OpenLedgerClientError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError(
-                    "Timeout exceeded when calling GET /integrations/status.",
-                );
-            case "unknown":
-                throw new errors.OpenLedgerClientError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * Connect a third-party integration
-     *
-     * @param {OpenLedgerClient.IntegrationConnectRequest} request
-     * @param {Integrations.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link OpenLedgerClient.BadRequestError}
-     * @throws {@link OpenLedgerClient.InternalServerError}
-     *
-     * @example
-     *     await client.integrations.connectIntegration({
-     *         entityId: "entityId",
-     *         provider: "provider",
-     *         authorization: {
-     *             "key": "value"
-     *         }
-     *     })
-     */
-    public connectIntegration(
-        request: OpenLedgerClient.IntegrationConnectRequest,
-        requestOptions?: Integrations.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.PostIntegrationsConnectResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__connectIntegration(request, requestOptions));
-    }
-
-    private async __connectIntegration(
-        request: OpenLedgerClient.IntegrationConnectRequest,
-        requestOptions?: Integrations.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.PostIntegrationsConnectResponse>> {
-        const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["entityId"] = entityId;
-        const _response = await (this._options.fetcher ?? core.fetcher)({
-            url: urlJoin(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)) ??
-                    environments.OpenLedgerClientEnvironment.Default,
-                "integrations/connect",
-            ),
-            method: "POST",
-            headers: {
-                Authorization: await this._getAuthorizationHeader(),
-                "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
-                "X-Fern-Runtime": core.RUNTIME.type,
-                "X-Fern-Runtime-Version": core.RUNTIME.version,
-                ...requestOptions?.headers,
-            },
-            contentType: "application/json",
-            queryParameters: _queryParams,
-            requestType: "json",
-            body: serializers.IntegrationConnectRequest.jsonOrThrow(_body, { unrecognizedObjectKeys: "strip" }),
-            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
-            maxRetries: requestOptions?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-        });
-        if (_response.ok) {
-            return {
-                data: serializers.PostIntegrationsConnectResponse.parseOrThrow(_response.body, {
+                data: serializers.GetV1IntegrationsStatusResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -223,7 +123,7 @@ export class Integrations {
                 });
             case "timeout":
                 throw new errors.OpenLedgerClientTimeoutError(
-                    "Timeout exceeded when calling POST /integrations/connect.",
+                    "Timeout exceeded when calling GET /v1/integrations/status.",
                 );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
@@ -234,62 +134,61 @@ export class Integrations {
     }
 
     /**
-     * Disconnect a third-party integration
+     * Initiates the connection process for a third-party integration using the Unified API
      *
-     * @param {OpenLedgerClient.IntegrationDisconnectRequest} request
+     * @param {OpenLedgerClient.PostV1IntegrationsConnectRequest} request
      * @param {Integrations.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.integrations.disconnectIntegration({
-     *         entityId: "entityId",
-     *         integrationId: "integrationId"
+     *     await client.integrations.connectAnIntegration({
+     *         provider: "quickbooks",
+     *         entityId: "entityId"
      *     })
      */
-    public disconnectIntegration(
-        request: OpenLedgerClient.IntegrationDisconnectRequest,
+    public connectAnIntegration(
+        request: OpenLedgerClient.PostV1IntegrationsConnectRequest,
         requestOptions?: Integrations.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.PostIntegrationsDisconnectResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__disconnectIntegration(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.PostV1IntegrationsConnectResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__connectAnIntegration(request, requestOptions));
     }
 
-    private async __disconnectIntegration(
-        request: OpenLedgerClient.IntegrationDisconnectRequest,
+    private async __connectAnIntegration(
+        request: OpenLedgerClient.PostV1IntegrationsConnectRequest,
         requestOptions?: Integrations.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.PostIntegrationsDisconnectResponse>> {
-        const { entityId, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["entityId"] = entityId;
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostV1IntegrationsConnectResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "integrations/disconnect",
+                "v1/integrations/connect",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
-            queryParameters: _queryParams,
             requestType: "json",
-            body: serializers.IntegrationDisconnectRequest.jsonOrThrow(_body, { unrecognizedObjectKeys: "strip" }),
+            body: serializers.PostV1IntegrationsConnectRequest.jsonOrThrow(request, {
+                unrecognizedObjectKeys: "strip",
+            }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
             return {
-                data: serializers.PostIntegrationsDisconnectResponse.parseOrThrow(_response.body, {
+                data: serializers.PostV1IntegrationsConnectResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -324,7 +223,7 @@ export class Integrations {
                 });
             case "timeout":
                 throw new errors.OpenLedgerClientTimeoutError(
-                    "Timeout exceeded when calling POST /integrations/disconnect.",
+                    "Timeout exceeded when calling POST /v1/integrations/connect.",
                 );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
@@ -334,12 +233,110 @@ export class Integrations {
         }
     }
 
-    protected async _getAuthorizationHeader(): Promise<string | undefined> {
-        const bearer = await core.Supplier.get(this._options.token);
-        if (bearer != null) {
-            return `Bearer ${bearer}`;
+    /**
+     * Disconnects an existing integration for an entity by removing it from the Unified Connections table
+     *
+     * @param {OpenLedgerClient.PostV1IntegrationsDisconnectRequest} request
+     * @param {Integrations.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.NotFoundError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
+     *
+     * @example
+     *     await client.integrations.disconnectAnIntegration({
+     *         entityId: "entityId",
+     *         integrationType: "integrationType"
+     *     })
+     */
+    public disconnectAnIntegration(
+        request: OpenLedgerClient.PostV1IntegrationsDisconnectRequest,
+        requestOptions?: Integrations.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PostV1IntegrationsDisconnectResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__disconnectAnIntegration(request, requestOptions));
+    }
+
+    private async __disconnectAnIntegration(
+        request: OpenLedgerClient.PostV1IntegrationsDisconnectRequest,
+        requestOptions?: Integrations.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostV1IntegrationsDisconnectResponse>> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                "v1/integrations/disconnect",
+            ),
+            method: "POST",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: serializers.PostV1IntegrationsDisconnectRequest.jsonOrThrow(request, {
+                unrecognizedObjectKeys: "strip",
+            }),
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return {
+                data: serializers.PostV1IntegrationsDisconnectResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
         }
 
-        return undefined;
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
+                case 404:
+                    throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling POST /v1/integrations/disconnect.",
+                );
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

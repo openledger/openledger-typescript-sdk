@@ -14,7 +14,7 @@ export declare namespace Banks {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
-        token?: core.Supplier<core.BearerToken | undefined>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -31,33 +31,33 @@ export declare namespace Banks {
 }
 
 export class Banks {
-    constructor(protected readonly _options: Banks.Options = {}) {}
+    constructor(protected readonly _options: Banks.Options) {}
 
     /**
-     * Generate a link token for Plaid integration
+     * Creates a new Plaid link token for connecting a bank account
      *
-     * @param {OpenLedgerClient.GetBanksCreateLinkRequest} request
+     * @param {OpenLedgerClient.GetV1BanksCreateLinkRequest} request
      * @param {Banks.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.banks.createPlaidLinkToken({
-     *         entityId: "entityId"
+     *     await client.banks.createABankLink({
+     *         entityId: "ent_123456"
      *     })
      */
-    public createPlaidLinkToken(
-        request: OpenLedgerClient.GetBanksCreateLinkRequest,
+    public createABankLink(
+        request: OpenLedgerClient.GetV1BanksCreateLinkRequest,
         requestOptions?: Banks.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.LinkTokenResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__createPlaidLinkToken(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.GetV1BanksCreateLinkResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createABankLink(request, requestOptions));
     }
 
-    private async __createPlaidLinkToken(
-        request: OpenLedgerClient.GetBanksCreateLinkRequest,
+    private async __createABankLink(
+        request: OpenLedgerClient.GetV1BanksCreateLinkRequest,
         requestOptions?: Banks.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.LinkTokenResponse>> {
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GetV1BanksCreateLinkResponse>> {
         const { entityId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
@@ -66,14 +66,15 @@ export class Banks {
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "banks/create-link",
+                "v1/banks/create-link",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -87,7 +88,7 @@ export class Banks {
         });
         if (_response.ok) {
             return {
-                data: serializers.LinkTokenResponse.parseOrThrow(_response.body, {
+                data: serializers.GetV1BanksCreateLinkResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -121,7 +122,9 @@ export class Banks {
                     rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /banks/create-link.");
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling GET /v1/banks/create-link.",
+                );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
@@ -131,47 +134,49 @@ export class Banks {
     }
 
     /**
-     * Add a bank account using public token from Plaid
+     * Adds new bank accounts using a Plaid public token
      *
-     * @param {OpenLedgerClient.BankAccountRequest} request
+     * @param {OpenLedgerClient.PutV1BanksAccountsRequest} request
      * @param {Banks.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.banks.addBankAccount({
-     *         entityId: "entityId",
-     *         publicToken: "public_token"
+     *     await client.banks.addBankAccounts({
+     *         entityId: "ent_123456",
+     *         publicToken: "public-sandbox-123456-abcdef"
      *     })
      */
-    public addBankAccount(
-        request: OpenLedgerClient.BankAccountRequest,
+    public addBankAccounts(
+        request: OpenLedgerClient.PutV1BanksAccountsRequest,
         requestOptions?: Banks.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.BankAccountResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__addBankAccount(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.PutV1BanksAccountsResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__addBankAccounts(request, requestOptions));
     }
 
-    private async __addBankAccount(
-        request: OpenLedgerClient.BankAccountRequest,
+    private async __addBankAccounts(
+        request: OpenLedgerClient.PutV1BanksAccountsRequest,
         requestOptions?: Banks.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.BankAccountResponse>> {
-        const { entityId, ..._body } = request;
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PutV1BanksAccountsResponse>> {
+        const { entityId, publicToken } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
+        _queryParams["public_token"] = publicToken;
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "banks/accounts",
+                "v1/banks/accounts",
             ),
             method: "PUT",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -179,14 +184,13 @@ export class Banks {
             contentType: "application/json",
             queryParameters: _queryParams,
             requestType: "json",
-            body: serializers.BankAccountRequest.jsonOrThrow(_body, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
             return {
-                data: serializers.BankAccountResponse.parseOrThrow(_response.body, {
+                data: serializers.PutV1BanksAccountsResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -220,7 +224,7 @@ export class Banks {
                     rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /banks/accounts.");
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /v1/banks/accounts.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
@@ -229,12 +233,7 @@ export class Banks {
         }
     }
 
-    protected async _getAuthorizationHeader(): Promise<string | undefined> {
-        const bearer = await core.Supplier.get(this._options.token);
-        if (bearer != null) {
-            return `Bearer ${bearer}`;
-        }
-
-        return undefined;
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

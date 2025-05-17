@@ -1,2 +1,2 @@
-export * as getTransactionsByCompany from "./getTransactionsByCompany";
+export * as getTransactionsByMonth from "./getTransactionsByMonth";
 export * from "./requests";

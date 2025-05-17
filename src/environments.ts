@@ -3,7 +3,7 @@
  */
 
 export const OpenLedgerClientEnvironment = {
-    Default: "https://api.openledger.com/v1",
+    Default: "https://api-staging.openledger.com",
 } as const;
 
 export type OpenLedgerClientEnvironment = typeof OpenLedgerClientEnvironment.Default;

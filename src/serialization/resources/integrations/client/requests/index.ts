@@ -1,2 +1,2 @@
-export { IntegrationConnectRequest } from "./IntegrationConnectRequest";
-export { IntegrationDisconnectRequest } from "./IntegrationDisconnectRequest";
+export { PostV1IntegrationsConnectRequest } from "./PostV1IntegrationsConnectRequest";
+export { PostV1IntegrationsDisconnectRequest } from "./PostV1IntegrationsDisconnectRequest";

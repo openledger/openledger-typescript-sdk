@@ -1,8 +1,8 @@
 # Reference
 
-## Authentication
+## Banks
 
-<details><summary><code>client.authentication.<a href="/src/api/resources/authentication/client/Client.ts">generateToken</a>({ ...params }) -> OpenLedgerClient.TokenResponse</code></summary>
+<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">createABankLink</a>({ ...params }) -> OpenLedgerClient.GetV1BanksCreateLinkResponse</code></summary>
 <dl>
 <dd>
 
@@ -14,7 +14,7 @@
 <dl>
 <dd>
 
-Generate a JWT token for API authentication
+Creates a new Plaid link token for connecting a bank account
 
 </dd>
 </dl>
@@ -30,9 +30,8 @@ Generate a JWT token for API authentication
 <dd>
 
 ```typescript
-await client.authentication.generateToken({
-    clientId: "client_id",
-    clientSecret: "client_secret",
+await client.banks.createABankLink({
+    entityId: "ent_123456",
 });
 ```
 
@@ -49,7 +48,7 @@ await client.authentication.generateToken({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.TokenRequest`
+**request:** `OpenLedgerClient.GetV1BanksCreateLinkRequest`
 
 </dd>
 </dl>
@@ -57,7 +56,7 @@ await client.authentication.generateToken({
 <dl>
 <dd>
 
-**requestOptions:** `Authentication.RequestOptions`
+**requestOptions:** `Banks.RequestOptions`
 
 </dd>
 </dl>
@@ -68,9 +67,7 @@ await client.authentication.generateToken({
 </dl>
 </details>
 
-## Transactions
-
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByCompany</a>({ ...params }) -> OpenLedgerClient.Transaction[]</code></summary>
+<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">addBankAccounts</a>({ ...params }) -> OpenLedgerClient.PutV1BanksAccountsResponse</code></summary>
 <dl>
 <dd>
 
@@ -82,7 +79,7 @@ await client.authentication.generateToken({
 <dl>
 <dd>
 
-Get all transactions for a company with optional filters
+Adds new bank accounts using a Plaid public token
 
 </dd>
 </dl>
@@ -98,7 +95,75 @@ Get all transactions for a company with optional filters
 <dd>
 
 ```typescript
-await client.transactions.getTransactionsByCompany({
+await client.banks.addBankAccounts({
+    entityId: "ent_123456",
+    publicToken: "public-sandbox-123456-abcdef",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PutV1BanksAccountsRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Banks.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Categories
+
+<details><summary><code>client.categories.<a href="/src/api/resources/categories/client/Client.ts">getCategories</a>({ ...params }) -> OpenLedgerClient.GetV1CategoriesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves all categories
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.categories.getCategories({
     entityId: "entityId",
 });
 ```
@@ -116,7 +181,932 @@ await client.transactions.getTransactionsByCompany({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.GetTransactionsRequest`
+**request:** `OpenLedgerClient.GetV1CategoriesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Categories.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.categories.<a href="/src/api/resources/categories/client/Client.ts">createANewCategory</a>({ ...params }) -> OpenLedgerClient.PostV1CategoriesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new category for the specified entity
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.categories.createANewCategory({
+    entityId: "entityId",
+    name: "name",
+    type: "ASSET",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1CategoriesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Categories.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Developers
+
+<details><summary><code>client.developers.<a href="/src/api/resources/developers/client/Client.ts">generateDeveloperAuthenticationToken</a>({ ...params }) -> OpenLedgerClient.PostV1DevelopersAuthGenerateTokenResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a JWT token for developer authentication
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.developers.generateDeveloperAuthenticationToken({
+    developerId: "developerId",
+    apiKey: "apiKey",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1DevelopersAuthGenerateTokenRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Developers.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Entities
+
+<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">generateAuthenticationToken</a>({ ...params }) -> OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a JWT token for entity authentication
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.entities.generateAuthenticationToken({
+    entityId: "entityId",
+    apiKey: "apiKey",
+    developerId: "developerId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Entities.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">getEntityDetails</a>({ ...params }) -> OpenLedgerClient.GetV1EntitiesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves details for a specific entity
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.entities.getEntityDetails();
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1EntitiesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Entities.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">createANewEntity</a>({ ...params }) -> OpenLedgerClient.PostV1EntitiesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Creates a new entity with the provided details
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.entities.createANewEntity({
+    developerId: "{{developerId}}",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1EntitiesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Entities.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">updateAnEntity</a>({ ...params }) -> OpenLedgerClient.PutV1EntitiesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Updates an existing entity's details
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.entities.updateAnEntity({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PutV1EntitiesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Entities.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">deleteAnEntity</a>({ ...params }) -> OpenLedgerClient.DeleteV1EntitiesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes an existing entity and its associated data
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.entities.deleteAnEntity({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.DeleteV1EntitiesRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Entities.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Integrations
+
+<details><summary><code>client.integrations.<a href="/src/api/resources/integrations/client/Client.ts">getIntegrationStatus</a>({ ...params }) -> OpenLedgerClient.GetV1IntegrationsStatusResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves the status of all integrations for an entity
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.integrations.getIntegrationStatus({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1IntegrationsStatusRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Integrations.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.integrations.<a href="/src/api/resources/integrations/client/Client.ts">connectAnIntegration</a>({ ...params }) -> OpenLedgerClient.PostV1IntegrationsConnectResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Initiates the connection process for a third-party integration using the Unified API
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.integrations.connectAnIntegration({
+    provider: "quickbooks",
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1IntegrationsConnectRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Integrations.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.integrations.<a href="/src/api/resources/integrations/client/Client.ts">disconnectAnIntegration</a>({ ...params }) -> OpenLedgerClient.PostV1IntegrationsDisconnectResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Disconnects an existing integration for an entity by removing it from the Unified Connections table
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.integrations.disconnectAnIntegration({
+    entityId: "entityId",
+    integrationType: "integrationType",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1IntegrationsDisconnectRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Integrations.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Reports
+
+<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">generateFinancialReports</a>({ ...params }) -> OpenLedgerClient.GetV1ReportsGenerateResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates comprehensive financial statements for an entity, including balance sheet, income statement, and cash flow statement
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.reports.generateFinancialReports({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1ReportsGenerateRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Reports.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">getGeneralLedgerReport</a>({ ...params }) -> OpenLedgerClient.GetV1ReportsGeneralLedgerResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a detailed general ledger report with account balances and journal entries
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.reports.getGeneralLedgerReport({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1ReportsGeneralLedgerRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Reports.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">getFinancialOverview</a>({ ...params }) -> OpenLedgerClient.GetV1ReportsOverviewResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves a high-level overview of financial data including balances, trends, and key metrics
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.reports.getFinancialOverview({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1ReportsOverviewRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Reports.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Transactions
+
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByEntity</a>({ ...params }) -> OpenLedgerClient.GetV1TransactionsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieves all transactions for a specific entity with pagination
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.transactions.getTransactionsByEntity({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1TransactionsRequest`
 
 </dd>
 </dl>
@@ -135,7 +1125,7 @@ await client.transactions.getTransactionsByCompany({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">createTransaction</a>({ ...params }) -> OpenLedgerClient.PostTransactionsResponse</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">createANewTransaction</a>({ ...params }) -> OpenLedgerClient.PostV1TransactionsResponse</code></summary>
 <dl>
 <dd>
 
@@ -147,7 +1137,7 @@ await client.transactions.getTransactionsByCompany({
 <dl>
 <dd>
 
-Create a new transaction
+Creates a new transaction for an entity
 
 </dd>
 </dl>
@@ -163,10 +1153,9 @@ Create a new transaction
 <dd>
 
 ```typescript
-await client.transactions.createTransaction({
+await client.transactions.createANewTransaction({
     entityId: "entityId",
     amount: 1.1,
-    description: "description",
     debitAccountId: "debitAccountId",
     creditAccountId: "creditAccountId",
 });
@@ -185,7 +1174,7 @@ await client.transactions.createTransaction({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.TransactionRequest`
+**request:** `OpenLedgerClient.PostV1TransactionsRequest`
 
 </dd>
 </dl>
@@ -204,7 +1193,7 @@ await client.transactions.createTransaction({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">approveTransaction</a>({ ...params }) -> OpenLedgerClient.PutTransactionsResponse</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">deleteATransaction</a>({ ...params }) -> OpenLedgerClient.DeleteV1TransactionsResponse</code></summary>
 <dl>
 <dd>
 
@@ -216,7 +1205,7 @@ await client.transactions.createTransaction({
 <dl>
 <dd>
 
-Approve a transaction
+Deletes an existing transaction
 
 </dd>
 </dl>
@@ -232,7 +1221,7 @@ Approve a transaction
 <dd>
 
 ```typescript
-await client.transactions.approveTransaction({
+await client.transactions.deleteATransaction({
     entityId: "entityId",
     transactionId: "transactionId",
 });
@@ -251,7 +1240,7 @@ await client.transactions.approveTransaction({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.PutTransactionsRequest`
+**request:** `OpenLedgerClient.DeleteV1TransactionsRequest`
 
 </dd>
 </dl>
@@ -270,7 +1259,7 @@ await client.transactions.approveTransaction({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">deleteTransaction</a>({ ...params }) -> OpenLedgerClient.DeleteTransactionsResponse</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">editATransaction</a>({ ...params }) -> OpenLedgerClient.PostV1TransactionsEditResponse</code></summary>
 <dl>
 <dd>
 
@@ -282,7 +1271,7 @@ await client.transactions.approveTransaction({
 <dl>
 <dd>
 
-Delete a transaction
+Edit an existing transaction by updating its accounts and/or description
 
 </dd>
 </dl>
@@ -298,9 +1287,8 @@ Delete a transaction
 <dd>
 
 ```typescript
-await client.transactions.deleteTransaction({
-    entityId: "entityId",
-    transactionId: "transactionId",
+await client.transactions.editATransaction({
+    id: "id",
 });
 ```
 
@@ -317,7 +1305,7 @@ await client.transactions.deleteTransaction({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.DeleteTransactionsRequest`
+**request:** `OpenLedgerClient.PostV1TransactionsEditRequest`
 
 </dd>
 </dl>
@@ -336,7 +1324,7 @@ await client.transactions.deleteTransaction({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByMonth</a>({ ...params }) -> void</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">approveOneOrMultipleTransactions</a>({ ...params }) -> OpenLedgerClient.PutV1TransactionsApproveResponse</code></summary>
 <dl>
 <dd>
 
@@ -348,7 +1336,73 @@ await client.transactions.deleteTransaction({
 <dl>
 <dd>
 
-Get transactions for a specified month
+Approve pending transactions by posting them to the ledger. Supports both single and batch transaction approval.
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.transactions.approveOneOrMultipleTransactions({
+    entityId: "entityId",
+    body: "tx_1234567890abcdef",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PutV1TransactionsApproveRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Transactions.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getTransactionsByMonth</a>({ ...params }) -> OpenLedgerClient.GetV1TransactionsByMonthResponseItem[]</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve monthly transaction summaries for an entity
 
 </dd>
 </dl>
@@ -366,8 +1420,6 @@ Get transactions for a specified month
 ```typescript
 await client.transactions.getTransactionsByMonth({
     entityId: "entityId",
-    month: "month",
-    year: "year",
 });
 ```
 
@@ -384,7 +1436,7 @@ await client.transactions.getTransactionsByMonth({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.GetTransactionsByMonthRequest`
+**request:** `OpenLedgerClient.GetV1TransactionsByMonthRequest`
 
 </dd>
 </dl>
@@ -403,7 +1455,7 @@ await client.transactions.getTransactionsByMonth({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">categorizeTransaction</a>({ ...params }) -> OpenLedgerClient.PostTransactionsCategorizeResponse</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">categorizeATransaction</a>({ ...params }) -> OpenLedgerClient.PostV1TransactionsCategorizeResponse</code></summary>
 <dl>
 <dd>
 
@@ -431,7 +1483,7 @@ Assign a category to a transaction
 <dd>
 
 ```typescript
-await client.transactions.categorizeTransaction({
+await client.transactions.categorizeATransaction({
     entityId: "entityId",
     transactionId: "transactionId",
     categoryId: "categoryId",
@@ -451,7 +1503,7 @@ await client.transactions.categorizeTransaction({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.TransactionCategorizeRequest`
+**request:** `OpenLedgerClient.PostV1TransactionsCategorizeRequest`
 
 </dd>
 </dl>
@@ -470,7 +1522,7 @@ await client.transactions.categorizeTransaction({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">searchTransactions</a>({ ...params }) -> OpenLedgerClient.PostTransactionsSearchResponse</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">searchTransactions</a>({ ...params }) -> OpenLedgerClient.PostV1TransactionsSearchResponse</code></summary>
 <dl>
 <dd>
 
@@ -482,7 +1534,7 @@ await client.transactions.categorizeTransaction({
 <dl>
 <dd>
 
-Search for transactions with various filters
+Search for transactions using various filters and text search
 
 </dd>
 </dl>
@@ -516,7 +1568,7 @@ await client.transactions.searchTransactions({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.TransactionSearchRequest`
+**request:** `OpenLedgerClient.PostV1TransactionsSearchRequest`
 
 </dd>
 </dl>
@@ -535,7 +1587,7 @@ await client.transactions.searchTransactions({
 </dl>
 </details>
 
-<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">chatWithTransactions</a>({ ...params }) -> OpenLedgerClient.GetTransactionsChatResponse</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">chatWithTransactions</a>({ ...params }) -> OpenLedgerClient.GetV1TransactionsChatResponse</code></summary>
 <dl>
 <dd>
 
@@ -547,7 +1599,7 @@ await client.transactions.searchTransactions({
 <dl>
 <dd>
 
-Natural language interaction with transactions
+Interact with transactions using natural language
 
 </dd>
 </dl>
@@ -582,7 +1634,7 @@ await client.transactions.chatWithTransactions({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.GetTransactionsChatRequest`
+**request:** `OpenLedgerClient.GetV1TransactionsChatRequest`
 
 </dd>
 </dl>
@@ -601,9 +1653,7 @@ await client.transactions.chatWithTransactions({
 </dl>
 </details>
 
-## Reports
-
-<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">getFinancialReports</a>({ ...params }) -> OpenLedgerClient.FinancialReport</code></summary>
+<details><summary><code>client.transactions.<a href="/src/api/resources/transactions/client/Client.ts">getEntityCounterparties</a>({ ...params }) -> OpenLedgerClient.GetV1TransactionsCounterpartiesResponse</code></summary>
 <dl>
 <dd>
 
@@ -615,7 +1665,7 @@ await client.transactions.chatWithTransactions({
 <dl>
 <dd>
 
-Get financial statements including balance sheet, income statement, and cash flow
+Get all counterparties for an entity with their transaction history and aggregated data
 
 </dd>
 </dl>
@@ -631,7 +1681,7 @@ Get financial statements including balance sheet, income statement, and cash flo
 <dd>
 
 ```typescript
-await client.reports.getFinancialReports({
+await client.transactions.getEntityCounterparties({
     entityId: "entityId",
 });
 ```
@@ -649,7 +1699,7 @@ await client.reports.getFinancialReports({
 <dl>
 <dd>
 
-**request:** `OpenLedgerClient.GetReportsFinancialRequest`
+**request:** `OpenLedgerClient.GetV1TransactionsCounterpartiesRequest`
 
 </dd>
 </dl>
@@ -657,805 +1707,7 @@ await client.reports.getFinancialReports({
 <dl>
 <dd>
 
-**requestOptions:** `Reports.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.reports.<a href="/src/api/resources/reports/client/Client.ts">generateGeneralLedger</a>({ ...params }) -> OpenLedgerClient.GeneralLedger</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Generate a general ledger report for an entity
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.reports.generateGeneralLedger({
-    entityId: "entityId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.GetReportsGeneralLedgerRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Reports.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-## Banks
-
-<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">createPlaidLinkToken</a>({ ...params }) -> OpenLedgerClient.LinkTokenResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Generate a link token for Plaid integration
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.banks.createPlaidLinkToken({
-    entityId: "entityId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.GetBanksCreateLinkRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Banks.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">addBankAccount</a>({ ...params }) -> OpenLedgerClient.BankAccountResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add a bank account using public token from Plaid
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.banks.addBankAccount({
-    entityId: "entityId",
-    publicToken: "public_token",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.BankAccountRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Banks.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-## Integrations
-
-<details><summary><code>client.integrations.<a href="/src/api/resources/integrations/client/Client.ts">getIntegrationStatus</a>({ ...params }) -> OpenLedgerClient.IntegrationStatusResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Get status of all integrations for an entity
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.integrations.getIntegrationStatus({
-    entityId: "entityId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.GetIntegrationsStatusRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Integrations.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.integrations.<a href="/src/api/resources/integrations/client/Client.ts">connectIntegration</a>({ ...params }) -> OpenLedgerClient.PostIntegrationsConnectResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Connect a third-party integration
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.integrations.connectIntegration({
-    entityId: "entityId",
-    provider: "provider",
-    authorization: {
-        key: "value",
-    },
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.IntegrationConnectRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Integrations.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.integrations.<a href="/src/api/resources/integrations/client/Client.ts">disconnectIntegration</a>({ ...params }) -> OpenLedgerClient.PostIntegrationsDisconnectResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Disconnect a third-party integration
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.integrations.disconnectIntegration({
-    entityId: "entityId",
-    integrationId: "integrationId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.IntegrationDisconnectRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Integrations.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-## Entities
-
-<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">getEntityDetails</a>({ ...params }) -> OpenLedgerClient.GetEntitiesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Get details for a specific entity
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.entities.getEntityDetails({
-    entityId: "entityId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.GetEntitiesRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Entities.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">createEntity</a>({ ...params }) -> OpenLedgerClient.PostEntitiesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Create a new entity
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.entities.createEntity({
-    legalName: "legalName",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.EntityCreateRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Entities.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">updateEntity</a>({ ...params }) -> OpenLedgerClient.PutEntitiesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Update an existing entity
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.entities.updateEntity({
-    entityId: "entityId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.EntityUpdateRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Entities.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">deleteEntity</a>({ ...params }) -> OpenLedgerClient.DeleteEntitiesResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Delete an entity
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.entities.deleteEntity({
-    entityId: "entityId",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.DeleteEntitiesRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Entities.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-## Ai
-
-<details><summary><code>client.ai.<a href="/src/api/resources/ai/client/Client.ts">semanticSearch</a>({ ...params }) -> OpenLedgerClient.SemanticSearchResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Perform semantic search across vectorized data
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.ai.semanticSearch({
-    entityId: "entityId",
-    query: "query",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.SemanticSearchRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Ai.RequestOptions`
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-</dd>
-</dl>
-</details>
-
-## Sandbox
-
-<details><summary><code>client.sandbox.<a href="/src/api/resources/sandbox/client/Client.ts">createSandboxEnvironment</a>({ ...params }) -> OpenLedgerClient.SandboxResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Creates a complete sandbox environment for development and testing, including a developer account, workspace, instance, entity, ledger structure, and Plaid sandbox bank connections.
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```typescript
-await client.sandbox.createSandboxEnvironment({
-    name: "name",
-    developerId: "developer_id",
-});
-```
-
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**request:** `OpenLedgerClient.SandboxRequest`
-
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**requestOptions:** `Sandbox.RequestOptions`
+**requestOptions:** `Transactions.RequestOptions`
 
 </dd>
 </dl>

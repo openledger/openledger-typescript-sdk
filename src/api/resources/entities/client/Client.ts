@@ -5,8 +5,8 @@
 import * as environments from "../../../../environments";
 import * as core from "../../../../core";
 import * as OpenLedgerClient from "../../../index";
-import urlJoin from "url-join";
 import * as serializers from "../../../../serialization/index";
+import urlJoin from "url-join";
 import * as errors from "../../../../errors/index";
 
 export declare namespace Entities {
@@ -14,7 +14,7 @@ export declare namespace Entities {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
-        token?: core.Supplier<core.BearerToken | undefined>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -31,49 +31,151 @@ export declare namespace Entities {
 }
 
 export class Entities {
-    constructor(protected readonly _options: Entities.Options = {}) {}
+    constructor(protected readonly _options: Entities.Options) {}
 
     /**
-     * Get details for a specific entity
+     * Generates a JWT token for entity authentication
      *
-     * @param {OpenLedgerClient.GetEntitiesRequest} request
+     * @param {OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest} request
      * @param {Entities.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link OpenLedgerClient.BadRequestError}
-     * @throws {@link OpenLedgerClient.NotFoundError}
+     * @throws {@link OpenLedgerClient.UnauthorizedError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.entities.getEntityDetails({
-     *         entityId: "entityId"
+     *     await client.entities.generateAuthenticationToken({
+     *         entityId: "entityId",
+     *         apiKey: "apiKey",
+     *         developerId: "developerId"
      *     })
      */
-    public getEntityDetails(
-        request: OpenLedgerClient.GetEntitiesRequest,
+    public generateAuthenticationToken(
+        request: OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest,
         requestOptions?: Entities.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.GetEntitiesResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getEntityDetails(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__generateAuthenticationToken(request, requestOptions));
     }
 
-    private async __getEntityDetails(
-        request: OpenLedgerClient.GetEntitiesRequest,
+    private async __generateAuthenticationToken(
+        request: OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest,
         requestOptions?: Entities.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.GetEntitiesResponse>> {
-        const { entityId } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        _queryParams["entityId"] = entityId;
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities",
+                "v1/entities/auth/generate-token",
+            ),
+            method: "POST",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: serializers.PostV1EntitiesAuthGenerateTokenRequest.jsonOrThrow(request, {
+                unrecognizedObjectKeys: "strip",
+            }),
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return {
+                data: serializers.PostV1EntitiesAuthGenerateTokenResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 401:
+                    throw new OpenLedgerClient.UnauthorizedError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling POST /v1/entities/auth/generate-token.",
+                );
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Retrieves details for a specific entity
+     *
+     * @param {OpenLedgerClient.GetV1EntitiesRequest} request
+     * @param {Entities.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.NotFoundError}
+     *
+     * @example
+     *     await client.entities.getEntityDetails()
+     */
+    public getEntityDetails(
+        request: OpenLedgerClient.GetV1EntitiesRequest = {},
+        requestOptions?: Entities.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.GetV1EntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__getEntityDetails(request, requestOptions));
+    }
+
+    private async __getEntityDetails(
+        request: OpenLedgerClient.GetV1EntitiesRequest = {},
+        requestOptions?: Entities.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GetV1EntitiesResponse>> {
+        const { entityId } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (entityId != null) {
+            _queryParams["entityId"] = entityId;
+        }
+
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                "v1/entities",
             ),
             method: "GET",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -87,7 +189,7 @@ export class Entities {
         });
         if (_response.ok) {
             return {
-                data: serializers.GetEntitiesResponse.parseOrThrow(_response.body, {
+                data: serializers.GetV1EntitiesResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -100,8 +202,6 @@ export class Entities {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
-                case 400:
-                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
                     throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
                 default:
@@ -121,7 +221,7 @@ export class Entities {
                     rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /entities.");
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling GET /v1/entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
@@ -131,56 +231,58 @@ export class Entities {
     }
 
     /**
-     * Create a new entity
+     * Creates a new entity with the provided details
      *
-     * @param {OpenLedgerClient.EntityCreateRequest} request
+     * @param {OpenLedgerClient.PostV1EntitiesRequest} request
      * @param {Entities.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.entities.createEntity({
-     *         legalName: "legalName"
+     *     await client.entities.createANewEntity({
+     *         developerId: "{{developerId}}"
      *     })
      */
-    public createEntity(
-        request: OpenLedgerClient.EntityCreateRequest,
+    public createANewEntity(
+        request: OpenLedgerClient.PostV1EntitiesRequest,
         requestOptions?: Entities.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.PostEntitiesResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__createEntity(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.PostV1EntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__createANewEntity(request, requestOptions));
     }
 
-    private async __createEntity(
-        request: OpenLedgerClient.EntityCreateRequest,
+    private async __createANewEntity(
+        request: OpenLedgerClient.PostV1EntitiesRequest,
         requestOptions?: Entities.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.PostEntitiesResponse>> {
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostV1EntitiesResponse>> {
         const _response = await (this._options.fetcher ?? core.fetcher)({
             url: urlJoin(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities",
+                "v1/entities",
             ),
             method: "POST",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
             },
             contentType: "application/json",
             requestType: "json",
-            body: serializers.EntityCreateRequest.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
+            body: serializers.PostV1EntitiesRequest.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
             return {
-                data: serializers.PostEntitiesResponse.parseOrThrow(_response.body, {
+                data: serializers.PostV1EntitiesResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -195,6 +297,8 @@ export class Entities {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
@@ -212,7 +316,7 @@ export class Entities {
                     rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling POST /entities.");
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling POST /v1/entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
@@ -222,30 +326,31 @@ export class Entities {
     }
 
     /**
-     * Update an existing entity
+     * Updates an existing entity's details
      *
-     * @param {OpenLedgerClient.EntityUpdateRequest} request
+     * @param {OpenLedgerClient.PutV1EntitiesRequest} request
      * @param {Entities.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.NotFoundError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.entities.updateEntity({
+     *     await client.entities.updateAnEntity({
      *         entityId: "entityId"
      *     })
      */
-    public updateEntity(
-        request: OpenLedgerClient.EntityUpdateRequest,
+    public updateAnEntity(
+        request: OpenLedgerClient.PutV1EntitiesRequest,
         requestOptions?: Entities.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.PutEntitiesResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__updateEntity(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.PutV1EntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__updateAnEntity(request, requestOptions));
     }
 
-    private async __updateEntity(
-        request: OpenLedgerClient.EntityUpdateRequest,
+    private async __updateAnEntity(
+        request: OpenLedgerClient.PutV1EntitiesRequest,
         requestOptions?: Entities.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.PutEntitiesResponse>> {
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PutV1EntitiesResponse>> {
         const { entityId, ..._body } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
@@ -254,14 +359,15 @@ export class Entities {
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities",
+                "v1/entities",
             ),
             method: "PUT",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -269,14 +375,14 @@ export class Entities {
             contentType: "application/json",
             queryParameters: _queryParams,
             requestType: "json",
-            body: serializers.EntityUpdateRequest.jsonOrThrow(_body, { unrecognizedObjectKeys: "strip" }),
+            body: serializers.PutV1EntitiesRequest.jsonOrThrow(_body, { unrecognizedObjectKeys: "strip" }),
             timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
             maxRetries: requestOptions?.maxRetries,
             abortSignal: requestOptions?.abortSignal,
         });
         if (_response.ok) {
             return {
-                data: serializers.PutEntitiesResponse.parseOrThrow(_response.body, {
+                data: serializers.PutV1EntitiesResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -293,6 +399,8 @@ export class Entities {
                     throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
                     throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
@@ -310,7 +418,7 @@ export class Entities {
                     rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /entities.");
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /v1/entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
@@ -320,30 +428,31 @@ export class Entities {
     }
 
     /**
-     * Delete an entity
+     * Deletes an existing entity and its associated data
      *
-     * @param {OpenLedgerClient.DeleteEntitiesRequest} request
+     * @param {OpenLedgerClient.DeleteV1EntitiesRequest} request
      * @param {Entities.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.NotFoundError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.entities.deleteEntity({
+     *     await client.entities.deleteAnEntity({
      *         entityId: "entityId"
      *     })
      */
-    public deleteEntity(
-        request: OpenLedgerClient.DeleteEntitiesRequest,
+    public deleteAnEntity(
+        request: OpenLedgerClient.DeleteV1EntitiesRequest,
         requestOptions?: Entities.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.DeleteEntitiesResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__deleteEntity(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.DeleteV1EntitiesResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__deleteAnEntity(request, requestOptions));
     }
 
-    private async __deleteEntity(
-        request: OpenLedgerClient.DeleteEntitiesRequest,
+    private async __deleteAnEntity(
+        request: OpenLedgerClient.DeleteV1EntitiesRequest,
         requestOptions?: Entities.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.DeleteEntitiesResponse>> {
+    ): Promise<core.WithRawResponse<OpenLedgerClient.DeleteV1EntitiesResponse>> {
         const { entityId } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
@@ -352,14 +461,15 @@ export class Entities {
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.OpenLedgerClientEnvironment.Default,
-                "entities",
+                "v1/entities",
             ),
             method: "DELETE",
             headers: {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
-                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.0.35",
+                "X-Fern-SDK-Name": "openledger",
+                "X-Fern-SDK-Version": "1.0.2",
+                "User-Agent": "openledger/1.0.2",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -373,7 +483,7 @@ export class Entities {
         });
         if (_response.ok) {
             return {
-                data: serializers.DeleteEntitiesResponse.parseOrThrow(_response.body, {
+                data: serializers.DeleteV1EntitiesResponse.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -390,6 +500,8 @@ export class Entities {
                     throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 404:
                     throw new OpenLedgerClient.NotFoundError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
                 default:
                     throw new errors.OpenLedgerClientError({
                         statusCode: _response.error.statusCode,
@@ -407,7 +519,7 @@ export class Entities {
                     rawResponse: _response.rawResponse,
                 });
             case "timeout":
-                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling DELETE /entities.");
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling DELETE /v1/entities.");
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,
@@ -416,12 +528,7 @@ export class Entities {
         }
     }
 
-    protected async _getAuthorizationHeader(): Promise<string | undefined> {
-        const bearer = await core.Supplier.get(this._options.token);
-        if (bearer != null) {
-            return `Bearer ${bearer}`;
-        }
-
-        return undefined;
+    protected async _getAuthorizationHeader(): Promise<string> {
+        return `Bearer ${await core.Supplier.get(this._options.token)}`;
     }
 }

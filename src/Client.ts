@@ -4,21 +4,20 @@
 
 import * as environments from "./environments";
 import * as core from "./core";
-import { Authentication } from "./api/resources/authentication/client/Client";
-import { Transactions } from "./api/resources/transactions/client/Client";
-import { Reports } from "./api/resources/reports/client/Client";
 import { Banks } from "./api/resources/banks/client/Client";
-import { Integrations } from "./api/resources/integrations/client/Client";
+import { Categories } from "./api/resources/categories/client/Client";
+import { Developers } from "./api/resources/developers/client/Client";
 import { Entities } from "./api/resources/entities/client/Client";
-import { Ai } from "./api/resources/ai/client/Client";
-import { Sandbox } from "./api/resources/sandbox/client/Client";
+import { Integrations } from "./api/resources/integrations/client/Client";
+import { Reports } from "./api/resources/reports/client/Client";
+import { Transactions } from "./api/resources/transactions/client/Client";
 
 export declare namespace OpenLedgerClientClient {
     export interface Options {
         environment?: core.Supplier<environments.OpenLedgerClientEnvironment | string>;
         /** Specify a custom URL to connect the client to. */
         baseUrl?: core.Supplier<string>;
-        token?: core.Supplier<core.BearerToken | undefined>;
+        token: core.Supplier<core.BearerToken>;
         fetcher?: core.FetchFunction;
     }
 
@@ -35,46 +34,41 @@ export declare namespace OpenLedgerClientClient {
 }
 
 export class OpenLedgerClientClient {
-    protected _authentication: Authentication | undefined;
-    protected _transactions: Transactions | undefined;
-    protected _reports: Reports | undefined;
     protected _banks: Banks | undefined;
-    protected _integrations: Integrations | undefined;
+    protected _categories: Categories | undefined;
+    protected _developers: Developers | undefined;
     protected _entities: Entities | undefined;
-    protected _ai: Ai | undefined;
-    protected _sandbox: Sandbox | undefined;
+    protected _integrations: Integrations | undefined;
+    protected _reports: Reports | undefined;
+    protected _transactions: Transactions | undefined;
 
-    constructor(protected readonly _options: OpenLedgerClientClient.Options = {}) {}
-
-    public get authentication(): Authentication {
-        return (this._authentication ??= new Authentication(this._options));
-    }
-
-    public get transactions(): Transactions {
-        return (this._transactions ??= new Transactions(this._options));
-    }
-
-    public get reports(): Reports {
-        return (this._reports ??= new Reports(this._options));
-    }
+    constructor(protected readonly _options: OpenLedgerClientClient.Options) {}
 
     public get banks(): Banks {
         return (this._banks ??= new Banks(this._options));
     }
 
-    public get integrations(): Integrations {
-        return (this._integrations ??= new Integrations(this._options));
+    public get categories(): Categories {
+        return (this._categories ??= new Categories(this._options));
+    }
+
+    public get developers(): Developers {
+        return (this._developers ??= new Developers(this._options));
     }
 
     public get entities(): Entities {
         return (this._entities ??= new Entities(this._options));
     }
 
-    public get ai(): Ai {
-        return (this._ai ??= new Ai(this._options));
+    public get integrations(): Integrations {
+        return (this._integrations ??= new Integrations(this._options));
     }
 
-    public get sandbox(): Sandbox {
-        return (this._sandbox ??= new Sandbox(this._options));
+    public get reports(): Reports {
+        return (this._reports ??= new Reports(this._options));
+    }
+
+    public get transactions(): Transactions {
+        return (this._transactions ??= new Transactions(this._options));
     }
 }
