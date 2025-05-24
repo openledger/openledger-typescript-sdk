@@ -8,6 +8,7 @@ import * as core from "../../../../core";
 import { GetV1TransactionsResponseTransactionsItemStatus } from "./GetV1TransactionsResponseTransactionsItemStatus";
 import { GetV1TransactionsResponseTransactionsItemDebitAccount } from "./GetV1TransactionsResponseTransactionsItemDebitAccount";
 import { GetV1TransactionsResponseTransactionsItemCreditAccount } from "./GetV1TransactionsResponseTransactionsItemCreditAccount";
+import { GetV1TransactionsResponseTransactionsItemPlaidAccount } from "./GetV1TransactionsResponseTransactionsItemPlaidAccount";
 
 export const GetV1TransactionsResponseTransactionsItem: core.serialization.ObjectSchema<
     serializers.GetV1TransactionsResponseTransactionsItem.Raw,
@@ -31,6 +32,10 @@ export const GetV1TransactionsResponseTransactionsItem: core.serialization.Objec
     categoryId: core.serialization.property("category_id", core.serialization.string().optional()),
     debitAccount: GetV1TransactionsResponseTransactionsItemDebitAccount.optional(),
     creditAccount: GetV1TransactionsResponseTransactionsItemCreditAccount.optional(),
+    plaidAccount: core.serialization.property(
+        "plaid_account",
+        GetV1TransactionsResponseTransactionsItemPlaidAccount.optional(),
+    ),
 });
 
 export declare namespace GetV1TransactionsResponseTransactionsItem {
@@ -53,5 +58,6 @@ export declare namespace GetV1TransactionsResponseTransactionsItem {
         category_id?: string | null;
         debitAccount?: GetV1TransactionsResponseTransactionsItemDebitAccount.Raw | null;
         creditAccount?: GetV1TransactionsResponseTransactionsItemCreditAccount.Raw | null;
+        plaid_account?: GetV1TransactionsResponseTransactionsItemPlaidAccount.Raw | null;
     }
 }

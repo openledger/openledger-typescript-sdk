@@ -23,4 +23,5 @@ export interface GetV1TransactionsResponseTransactionsItem {
     categoryId?: string;
     debitAccount?: OpenLedgerClient.GetV1TransactionsResponseTransactionsItemDebitAccount;
     creditAccount?: OpenLedgerClient.GetV1TransactionsResponseTransactionsItemCreditAccount;
+    plaidAccount?: OpenLedgerClient.GetV1TransactionsResponseTransactionsItemPlaidAccount;
 }

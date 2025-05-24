@@ -5,6 +5,7 @@
 import * as serializers from "../../../index";
 import * as OpenLedgerClient from "../../../../api/index";
 import * as core from "../../../../core";
+import { GetV1TransactionsByMonthResponseItemPlaidAccountBreakdownItem } from "./GetV1TransactionsByMonthResponseItemPlaidAccountBreakdownItem";
 
 export const GetV1TransactionsByMonthResponseItem: core.serialization.ObjectSchema<
     serializers.GetV1TransactionsByMonthResponseItem.Raw,
@@ -13,6 +14,9 @@ export const GetV1TransactionsByMonthResponseItem: core.serialization.ObjectSche
     year: core.serialization.number().optional(),
     month: core.serialization.number().optional(),
     delta: core.serialization.number().optional(),
+    plaidAccountBreakdown: core.serialization
+        .list(GetV1TransactionsByMonthResponseItemPlaidAccountBreakdownItem)
+        .optional(),
 });
 
 export declare namespace GetV1TransactionsByMonthResponseItem {
@@ -20,5 +24,6 @@ export declare namespace GetV1TransactionsByMonthResponseItem {
         year?: number | null;
         month?: number | null;
         delta?: number | null;
+        plaidAccountBreakdown?: GetV1TransactionsByMonthResponseItemPlaidAccountBreakdownItem.Raw[] | null;
     }
 }

@@ -5,19 +5,22 @@
 import * as serializers from "../../../index";
 import * as OpenLedgerClient from "../../../../api/index";
 import * as core from "../../../../core";
-import { PostV1TransactionsEditResponseTransaction } from "./PostV1TransactionsEditResponseTransaction";
 
 export const PostV1TransactionsEditResponse: core.serialization.ObjectSchema<
     serializers.PostV1TransactionsEditResponse.Raw,
     OpenLedgerClient.PostV1TransactionsEditResponse
 > = core.serialization.object({
-    transaction: PostV1TransactionsEditResponseTransaction.optional(),
-    updateResult: core.serialization.record(core.serialization.string(), core.serialization.unknown()).optional(),
+    id: core.serialization.string().optional(),
+    debitAccountId: core.serialization.property("debit_account_id", core.serialization.number().optional()),
+    description: core.serialization.string().optional(),
+    creditAccountId: core.serialization.property("credit_account_id", core.serialization.number().optional()),
 });
 
 export declare namespace PostV1TransactionsEditResponse {
     export interface Raw {
-        transaction?: PostV1TransactionsEditResponseTransaction.Raw | null;
-        updateResult?: Record<string, unknown> | null;
+        id?: string | null;
+        debit_account_id?: number | null;
+        description?: string | null;
+        credit_account_id?: number | null;
     }
 }
