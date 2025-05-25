@@ -1,14 +1,14 @@
 # Openledger TypeScript Library
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fopenledger%2Fopenledger-typescript-sdk)
-[![npm shield](https://img.shields.io/npm/v/openledger)](https://www.npmjs.com/package/openledger)
+[![npm shield](https://img.shields.io/npm/v/@openledger/typescript-sdk)](https://www.npmjs.com/package/@openledger/typescript-sdk)
 
 The Openledger TypeScript library provides convenient access to the Openledger API from TypeScript.
 
 ## Installation
 
 ```sh
-npm i -s openledger
+npm i -s @openledger/typescript-sdk
 ```
 
 ## Reference
@@ -20,7 +20,7 @@ A full reference for this library is available [here](./reference.md).
 Instantiate and use the client with the following:
 
 ```typescript
-import { OpenLedgerClientClient } from "openledger";
+import { OpenLedgerClientClient } from "@openledger/typescript-sdk";
 
 const client = new OpenLedgerClientClient({ token: "YOUR_TOKEN" });
 await client.categories.createANewCategory({
@@ -36,7 +36,7 @@ The SDK exports all request and response types as TypeScript interfaces. Simply 
 following namespace:
 
 ```typescript
-import { OpenLedgerClient } from "openledger";
+import { OpenLedgerClient } from "@openledger/typescript-sdk";
 
 const request: OpenLedgerClient.GetV1BanksCreateLinkRequest = {
     ...
@@ -49,7 +49,7 @@ When the API returns a non-success status code (4xx or 5xx response), a subclass
 will be thrown.
 
 ```typescript
-import { OpenLedgerClientError } from "openledger";
+import { OpenLedgerClientError } from "@openledger/typescript-sdk";
 
 try {
     await client.categories.createANewCategory(...);
@@ -149,7 +149,7 @@ The SDK provides a way for you to customize the underlying HTTP client / Fetch f
 unsupported environment, this provides a way for you to break glass and ensure the SDK works.
 
 ```typescript
-import { OpenLedgerClientClient } from "openledger";
+import { OpenLedgerClientClient } from "@openledger/typescript-sdk";
 
 const client = new OpenLedgerClientClient({
     ...
