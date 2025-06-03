@@ -10,13 +10,11 @@ export const BadRequestErrorBody: core.serialization.ObjectSchema<
     serializers.BadRequestErrorBody.Raw,
     OpenLedgerClient.BadRequestErrorBody
 > = core.serialization.object({
-    success: core.serialization.boolean().optional(),
     error: core.serialization.string().optional(),
 });
 
 export declare namespace BadRequestErrorBody {
     export interface Raw {
-        success?: boolean | null;
         error?: string | null;
     }
 }

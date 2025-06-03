@@ -1,0 +1,1 @@
+export { BankSyncBody } from "./BankSyncBody";

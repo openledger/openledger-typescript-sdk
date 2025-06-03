@@ -73,8 +73,8 @@ export class Banks {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -134,7 +134,7 @@ export class Banks {
     }
 
     /**
-     * Adds new bank accounts using a Plaid public token
+     * Adds bank accounts to an entity using a Plaid public token obtained from the Plaid Link interface
      *
      * @param {OpenLedgerClient.PutV1BanksAccountsRequest} request
      * @param {Banks.RequestOptions} requestOptions - Request-specific configuration.
@@ -143,22 +143,22 @@ export class Banks {
      * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.banks.addBankAccounts({
-     *         entityId: "ent_123456",
-     *         publicToken: "public-sandbox-123456-abcdef"
+     *     await client.banks.addBankAccountsForAnEntity({
+     *         entityId: "entityId",
+     *         publicToken: "public_token"
      *     })
      */
-    public addBankAccounts(
+    public addBankAccountsForAnEntity(
         request: OpenLedgerClient.PutV1BanksAccountsRequest,
         requestOptions?: Banks.RequestOptions,
-    ): core.HttpResponsePromise<OpenLedgerClient.PutV1BanksAccountsResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__addBankAccounts(request, requestOptions));
+    ): core.HttpResponsePromise<OpenLedgerClient.BankAccount[]> {
+        return core.HttpResponsePromise.fromPromise(this.__addBankAccountsForAnEntity(request, requestOptions));
     }
 
-    private async __addBankAccounts(
+    private async __addBankAccountsForAnEntity(
         request: OpenLedgerClient.PutV1BanksAccountsRequest,
         requestOptions?: Banks.RequestOptions,
-    ): Promise<core.WithRawResponse<OpenLedgerClient.PutV1BanksAccountsResponse>> {
+    ): Promise<core.WithRawResponse<OpenLedgerClient.BankAccount[]>> {
         const { entityId, publicToken } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         _queryParams["entityId"] = entityId;
@@ -175,8 +175,8 @@ export class Banks {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -190,7 +190,7 @@ export class Banks {
         });
         if (_response.ok) {
             return {
-                data: serializers.PutV1BanksAccountsResponse.parseOrThrow(_response.body, {
+                data: serializers.banks.addBankAccountsForAnEntity.Response.parseOrThrow(_response.body, {
                     unrecognizedObjectKeys: "passthrough",
                     allowUnrecognizedUnionMembers: true,
                     allowUnrecognizedEnumValues: true,
@@ -225,6 +225,201 @@ export class Banks {
                 });
             case "timeout":
                 throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling PUT /v1/banks/accounts.");
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Synchronizes transaction data for all connected Plaid accounts belonging to an entity
+     *
+     * @param {OpenLedgerClient.BankSyncBody} request
+     * @param {Banks.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
+     *
+     * @example
+     *     await client.banks.syncPlaidAccountsForAnEntity({
+     *         entityId: "entityId"
+     *     })
+     */
+    public syncPlaidAccountsForAnEntity(
+        request: OpenLedgerClient.BankSyncBody,
+        requestOptions?: Banks.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.PostV1BanksSyncResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__syncPlaidAccountsForAnEntity(request, requestOptions));
+    }
+
+    private async __syncPlaidAccountsForAnEntity(
+        request: OpenLedgerClient.BankSyncBody,
+        requestOptions?: Banks.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.PostV1BanksSyncResponse>> {
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                "v1/banks/sync",
+            ),
+            method: "POST",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
+            },
+            contentType: "application/json",
+            requestType: "json",
+            body: serializers.BankSyncBody.jsonOrThrow(request, { unrecognizedObjectKeys: "strip" }),
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return {
+                data: serializers.PostV1BanksSyncResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError("Timeout exceeded when calling POST /v1/banks/sync.");
+            case "unknown":
+                throw new errors.OpenLedgerClientError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Check the synchronization status of bank accounts for an entity
+     *
+     * @param {OpenLedgerClient.GetV1BanksSyncStatusRequest} request
+     * @param {Banks.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link OpenLedgerClient.BadRequestError}
+     * @throws {@link OpenLedgerClient.InternalServerError}
+     *
+     * @example
+     *     await client.banks.checkSyncStatusOfBankAccounts({
+     *         entityId: "entityId"
+     *     })
+     */
+    public checkSyncStatusOfBankAccounts(
+        request: OpenLedgerClient.GetV1BanksSyncStatusRequest,
+        requestOptions?: Banks.RequestOptions,
+    ): core.HttpResponsePromise<OpenLedgerClient.GetV1BanksSyncStatusResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__checkSyncStatusOfBankAccounts(request, requestOptions));
+    }
+
+    private async __checkSyncStatusOfBankAccounts(
+        request: OpenLedgerClient.GetV1BanksSyncStatusRequest,
+        requestOptions?: Banks.RequestOptions,
+    ): Promise<core.WithRawResponse<OpenLedgerClient.GetV1BanksSyncStatusResponse>> {
+        const { entityId } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        _queryParams["entityId"] = entityId;
+        const _response = await (this._options.fetcher ?? core.fetcher)({
+            url: urlJoin(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)) ??
+                    environments.OpenLedgerClientEnvironment.Default,
+                "v1/banks/sync-status",
+            ),
+            method: "GET",
+            headers: {
+                Authorization: await this._getAuthorizationHeader(),
+                "X-Fern-Language": "JavaScript",
+                "X-Fern-SDK-Name": "@openledger/typescript-sdk",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
+                "X-Fern-Runtime": core.RUNTIME.type,
+                "X-Fern-Runtime-Version": core.RUNTIME.version,
+                ...requestOptions?.headers,
+            },
+            contentType: "application/json",
+            queryParameters: _queryParams,
+            requestType: "json",
+            timeoutMs: requestOptions?.timeoutInSeconds != null ? requestOptions.timeoutInSeconds * 1000 : 60000,
+            maxRetries: requestOptions?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+        });
+        if (_response.ok) {
+            return {
+                data: serializers.GetV1BanksSyncStatusResponse.parseOrThrow(_response.body, {
+                    unrecognizedObjectKeys: "passthrough",
+                    allowUnrecognizedUnionMembers: true,
+                    allowUnrecognizedEnumValues: true,
+                    skipValidation: true,
+                    breadcrumbsPrefix: ["response"],
+                }),
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
+                case 500:
+                    throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
+                default:
+                    throw new errors.OpenLedgerClientError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.OpenLedgerClientError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.OpenLedgerClientTimeoutError(
+                    "Timeout exceeded when calling GET /v1/banks/sync-status.",
+                );
             case "unknown":
                 throw new errors.OpenLedgerClientError({
                     message: _response.error.errorMessage,

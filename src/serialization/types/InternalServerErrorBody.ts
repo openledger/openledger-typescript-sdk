@@ -10,13 +10,11 @@ export const InternalServerErrorBody: core.serialization.ObjectSchema<
     serializers.InternalServerErrorBody.Raw,
     OpenLedgerClient.InternalServerErrorBody
 > = core.serialization.object({
-    success: core.serialization.boolean().optional(),
     error: core.serialization.string().optional(),
 });
 
 export declare namespace InternalServerErrorBody {
     export interface Raw {
-        success?: boolean | null;
         error?: string | null;
     }
 }

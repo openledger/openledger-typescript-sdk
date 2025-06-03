@@ -67,7 +67,7 @@ await client.banks.createABankLink({
 </dl>
 </details>
 
-<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">addBankAccounts</a>({ ...params }) -> OpenLedgerClient.PutV1BanksAccountsResponse</code></summary>
+<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">addBankAccountsForAnEntity</a>({ ...params }) -> OpenLedgerClient.BankAccount[]</code></summary>
 <dl>
 <dd>
 
@@ -79,7 +79,7 @@ await client.banks.createABankLink({
 <dl>
 <dd>
 
-Adds new bank accounts using a Plaid public token
+Adds bank accounts to an entity using a Plaid public token obtained from the Plaid Link interface
 
 </dd>
 </dl>
@@ -95,9 +95,9 @@ Adds new bank accounts using a Plaid public token
 <dd>
 
 ```typescript
-await client.banks.addBankAccounts({
-    entityId: "ent_123456",
-    publicToken: "public-sandbox-123456-abcdef",
+await client.banks.addBankAccountsForAnEntity({
+    entityId: "entityId",
+    publicToken: "public_token",
 });
 ```
 
@@ -115,6 +115,136 @@ await client.banks.addBankAccounts({
 <dd>
 
 **request:** `OpenLedgerClient.PutV1BanksAccountsRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Banks.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">syncPlaidAccountsForAnEntity</a>({ ...params }) -> OpenLedgerClient.PostV1BanksSyncResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Synchronizes transaction data for all connected Plaid accounts belonging to an entity
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.banks.syncPlaidAccountsForAnEntity({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.BankSyncBody`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Banks.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.banks.<a href="/src/api/resources/banks/client/Client.ts">checkSyncStatusOfBankAccounts</a>({ ...params }) -> OpenLedgerClient.GetV1BanksSyncStatusResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Check the synchronization status of bank accounts for an entity
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.banks.checkSyncStatusOfBankAccounts({
+    entityId: "entityId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.GetV1BanksSyncStatusRequest`
 
 </dd>
 </dl>
@@ -337,7 +467,7 @@ await client.developers.generateDeveloperAuthenticationToken({
 
 ## Entities
 
-<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">generateAuthenticationToken</a>({ ...params }) -> OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse</code></summary>
+<details><summary><code>client.entities.<a href="/src/api/resources/entities/client/Client.ts">generateEntityAuthenticationToken</a>({ ...params }) -> OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse</code></summary>
 <dl>
 <dd>
 
@@ -365,7 +495,7 @@ Generates a JWT token for entity authentication
 <dd>
 
 ```typescript
-await client.entities.generateAuthenticationToken({
+await client.entities.generateEntityAuthenticationToken({
     entityId: "entityId",
     apiKey: "apiKey",
     developerId: "developerId",
@@ -1708,6 +1838,208 @@ await client.transactions.getEntityCounterparties({
 <dd>
 
 **requestOptions:** `Transactions.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+## Authentication
+
+<details><summary><code>client.authentication.<a href="/src/api/resources/authentication/client/Client.ts">generateAccessToken</a>({ ...params }) -> OpenLedgerClient.PostV1AuthTokensResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a JWT access token for any user type with a unified request format
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.authentication.generateAccessToken({
+    userType: "developer",
+    id: "id",
+    apiKey: "apiKey",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1AuthTokensRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Authentication.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.authentication.<a href="/src/api/resources/authentication/client/Client.ts">generateDeveloperAuthenticationToken</a>({ ...params }) -> OpenLedgerClient.PostV1AuthDeveloperTokenResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a JWT token for developer authentication
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.authentication.generateDeveloperAuthenticationToken({
+    developerId: "developerId",
+    apiKey: "apiKey",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1AuthDeveloperTokenRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Authentication.RequestOptions`
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.authentication.<a href="/src/api/resources/authentication/client/Client.ts">generateEntityAuthenticationToken</a>({ ...params }) -> OpenLedgerClient.PostV1AuthEntityTokenResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a JWT token for entity authentication
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```typescript
+await client.authentication.generateEntityAuthenticationToken({
+    entityId: "entityId",
+    apiKey: "apiKey",
+    developerId: "developerId",
+});
+```
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request:** `OpenLedgerClient.PostV1AuthEntityTokenRequest`
+
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requestOptions:** `Authentication.RequestOptions`
 
 </dd>
 </dl>

@@ -39,24 +39,24 @@ export class Entities {
      * @param {OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest} request
      * @param {Entities.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link OpenLedgerClient.UnauthorizedError}
+     * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
-     *     await client.entities.generateAuthenticationToken({
+     *     await client.entities.generateEntityAuthenticationToken({
      *         entityId: "entityId",
      *         apiKey: "apiKey",
      *         developerId: "developerId"
      *     })
      */
-    public generateAuthenticationToken(
+    public generateEntityAuthenticationToken(
         request: OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest,
         requestOptions?: Entities.RequestOptions,
     ): core.HttpResponsePromise<OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__generateAuthenticationToken(request, requestOptions));
+        return core.HttpResponsePromise.fromPromise(this.__generateEntityAuthenticationToken(request, requestOptions));
     }
 
-    private async __generateAuthenticationToken(
+    private async __generateEntityAuthenticationToken(
         request: OpenLedgerClient.PostV1EntitiesAuthGenerateTokenRequest,
         requestOptions?: Entities.RequestOptions,
     ): Promise<core.WithRawResponse<OpenLedgerClient.PostV1EntitiesAuthGenerateTokenResponse>> {
@@ -72,8 +72,8 @@ export class Entities {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -102,8 +102,8 @@ export class Entities {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
-                case 401:
-                    throw new OpenLedgerClient.UnauthorizedError(_response.error.body, _response.rawResponse);
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 500:
                     throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
                 default:
@@ -174,8 +174,8 @@ export class Entities {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -267,8 +267,8 @@ export class Entities {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -366,8 +366,8 @@ export class Entities {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -468,8 +468,8 @@ export class Entities {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,

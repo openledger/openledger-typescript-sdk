@@ -39,7 +39,7 @@ export class Developers {
      * @param {OpenLedgerClient.PostV1DevelopersAuthGenerateTokenRequest} request
      * @param {Developers.RequestOptions} requestOptions - Request-specific configuration.
      *
-     * @throws {@link OpenLedgerClient.UnauthorizedError}
+     * @throws {@link OpenLedgerClient.BadRequestError}
      * @throws {@link OpenLedgerClient.InternalServerError}
      *
      * @example
@@ -73,8 +73,8 @@ export class Developers {
                 Authorization: await this._getAuthorizationHeader(),
                 "X-Fern-Language": "JavaScript",
                 "X-Fern-SDK-Name": "@openledger/typescript-sdk",
-                "X-Fern-SDK-Version": "0.51.9",
-                "User-Agent": "@openledger/typescript-sdk/0.51.9",
+                "X-Fern-SDK-Version": "0.51.10",
+                "User-Agent": "@openledger/typescript-sdk/0.51.10",
                 "X-Fern-Runtime": core.RUNTIME.type,
                 "X-Fern-Runtime-Version": core.RUNTIME.version,
                 ...requestOptions?.headers,
@@ -103,8 +103,8 @@ export class Developers {
 
         if (_response.error.reason === "status-code") {
             switch (_response.error.statusCode) {
-                case 401:
-                    throw new OpenLedgerClient.UnauthorizedError(_response.error.body, _response.rawResponse);
+                case 400:
+                    throw new OpenLedgerClient.BadRequestError(_response.error.body, _response.rawResponse);
                 case 500:
                     throw new OpenLedgerClient.InternalServerError(_response.error.body, _response.rawResponse);
                 default:

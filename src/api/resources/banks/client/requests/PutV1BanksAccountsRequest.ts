@@ -5,17 +5,17 @@
 /**
  * @example
  *     {
- *         entityId: "ent_123456",
- *         publicToken: "public-sandbox-123456-abcdef"
+ *         entityId: "entityId",
+ *         publicToken: "public_token"
  *     }
  */
 export interface PutV1BanksAccountsRequest {
     /**
-     * The ID of the entity to add the bank accounts for
+     * The ID of the entity to add bank accounts for
      */
     entityId: string;
     /**
-     * The Plaid public token received from the Plaid Link onSuccess callback
+     * The public token obtained from Plaid Link
      */
     publicToken: string;
 }

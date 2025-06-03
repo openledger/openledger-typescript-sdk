@@ -11,6 +11,7 @@ import { Entities } from "./api/resources/entities/client/Client";
 import { Integrations } from "./api/resources/integrations/client/Client";
 import { Reports } from "./api/resources/reports/client/Client";
 import { Transactions } from "./api/resources/transactions/client/Client";
+import { Authentication } from "./api/resources/authentication/client/Client";
 
 export declare namespace OpenLedgerClientClient {
     export interface Options {
@@ -41,6 +42,7 @@ export class OpenLedgerClientClient {
     protected _integrations: Integrations | undefined;
     protected _reports: Reports | undefined;
     protected _transactions: Transactions | undefined;
+    protected _authentication: Authentication | undefined;
 
     constructor(protected readonly _options: OpenLedgerClientClient.Options) {}
 
@@ -70,5 +72,9 @@ export class OpenLedgerClientClient {
 
     public get transactions(): Transactions {
         return (this._transactions ??= new Transactions(this._options));
+    }
+
+    public get authentication(): Authentication {
+        return (this._authentication ??= new Authentication(this._options));
     }
 }

@@ -3,6 +3,5 @@
  */
 
 export interface BadRequestErrorBody {
-    success?: boolean;
     error?: string;
 }
